@@ -1,3 +1,6 @@
+cls <- function() cat("\f")
+
+
 # Bibliotecas para a Análise ----------------------------------------------
 library(SmartEDA)
 library(tidyverse)
@@ -77,20 +80,9 @@ SmartEDA::ExpCatStat(
    Round = 3
 )
 
-SmartEDA::ExpCatStat(
-   data = adult,
-   Target = "resposta",
-   result = "Stat",
-   clim = 20,
-   # nlim = NULL,
-   bins = 20,
-   plot = TRUE,
-   top = 30,
-   Round = 5
-) %>%
-   filter(Variable != "id") %>%
-   arrange(desc(`Cramers V`), desc(`Chi-squared`))
 
+# Análises um pouco mais conclusivas --------------------------------------
+cls()
 
 adult %>%
    mutate(
@@ -105,6 +97,26 @@ adult %>%
       parallel = TRUE
    )
 
+SmartEDA::ExpCatStat(
+   data = adult,
+   Target = "resposta",
+   result = "Stat",
+   clim = 20,
+   # nlim = NULL,
+   bins = 20,
+   plot = FALSE,
+   top = 30,
+   Round = 5
+) %>%
+   filter(Variable != "id") %>%
+   arrange(desc(`Cramers V`), desc(`Chi-squared`))
 
+cls()
+table(adult$relationship, adult$resposta)
+table(adult$marital_status, adult$resposta)
+table(adult$occupation, adult$resposta)
+table(adult$education, adult$resposta)
 table(adult$sex, adult$resposta)
+table(adult$workclass, adult$resposta)
+table(adult$race, adult$resposta)
 
