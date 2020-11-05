@@ -213,6 +213,7 @@ SmartEDA::ExpCatStat(
    arrange(desc(`Cramers V`), desc(`Chi-squared`))
 
 cls()
+adult2 %>% glimpse()
 table(adult2$relationship, adult2$resposta)
 table(adult2$marital_status, adult2$resposta)
 table(adult2$occupation, adult2$resposta)
@@ -220,3 +221,36 @@ table(adult2$education, adult2$resposta)
 table(adult2$sex, adult2$resposta)
 table(adult2$workclass, adult2$resposta)
 table(adult2$race, adult2$resposta)
+
+
+# 3. Modelagem ------------------------------------------------------------
+
+split <- initial_split(data = adult2, strata = resposta, prop = 3/4)
+split
+
+adult_train <- training(split)
+adult_test <- testing(split)
+
+# Validacao Cruzada...
+
+adult_resamples <- vfold_cv(adult_train, v = 10)
+
+# Definicao de Modelo...
+
+adult_tree_model <- decision_tree(
+   cost_complexity = tune(),
+   min_n = 5,
+   tree_depth = tune()
+) %>%
+   set_engine("rpart") %>%
+   set_mode("classification")
+
+# Tunagem...
+
+adult_train_tune <- tune_grid(
+   model = adult_tree_model,
+   formula = resposta ~.,
+   resamples = adult_resamples,
+   grid = 100,
+   control = control_grid(verbose = TRUE, allow_par = TRUE)
+)

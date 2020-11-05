@@ -23,6 +23,8 @@ adult %>% glimpse()
 
 adult %>% count(resposta)
 
+adult %>% map_dbl(~mean(is.na(.x))) %>% scales::percent()
+
 
 # Análises Exploratórias --------------------------------------------------
 SmartEDA::ExpData(
