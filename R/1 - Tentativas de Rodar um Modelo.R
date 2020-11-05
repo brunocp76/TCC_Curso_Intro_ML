@@ -174,7 +174,7 @@ adult %>% glimpse()
 adult2 %>% glimpse()
 
 SmartEDA::ExpNumViz(
-   data = adult,
+   data = adult2,
    target = "resposta",
    type = 1,
    # nlim = NULL,
@@ -184,7 +184,7 @@ SmartEDA::ExpNumViz(
    sample = NULL
 )
 
-IV <- adult %>%
+IV <- adult2 %>%
    mutate(
       resp_num = ifelse(test = resposta == "<=50K",
                         yes = 0L,
@@ -196,9 +196,10 @@ IV <- adult %>%
       bins = 20,
       parallel = TRUE
    )
+IV
 
 SmartEDA::ExpCatStat(
-   data = adult,
+   data = adult2,
    Target = "resposta",
    result = "Stat",
    clim = 20,
@@ -212,10 +213,10 @@ SmartEDA::ExpCatStat(
    arrange(desc(`Cramers V`), desc(`Chi-squared`))
 
 cls()
-table(adult$relationship, adult$resposta)
-table(adult$marital_status, adult$resposta)
-table(adult$occupation, adult$resposta)
-table(adult$education, adult$resposta)
-table(adult$sex, adult$resposta)
-table(adult$workclass, adult$resposta)
-table(adult$race, adult$resposta)
+table(adult2$relationship, adult2$resposta)
+table(adult2$marital_status, adult2$resposta)
+table(adult2$occupation, adult2$resposta)
+table(adult2$education, adult2$resposta)
+table(adult2$sex, adult2$resposta)
+table(adult2$workclass, adult2$resposta)
+table(adult2$race, adult2$resposta)
