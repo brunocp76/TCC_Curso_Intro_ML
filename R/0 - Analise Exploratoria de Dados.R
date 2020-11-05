@@ -46,17 +46,6 @@ SmartEDA::ExpNumStat(
    round = 2
 )
 
-SmartEDA::ExpNumViz(
-   data = adult,
-   target = "resposta",
-   type = 1,
-   # nlim = NULL,
-   fname = NULL,
-   col = c("blue", "red"),
-   Page = c(3, 2),
-   sample = NULL
-)
-
 SmartEDA::ExpCTable(
    data = adult,
    Target = "resposta",
@@ -83,6 +72,17 @@ SmartEDA::ExpCatStat(
 
 # Análises um pouco mais conclusivas --------------------------------------
 cls()
+
+SmartEDA::ExpNumViz(
+   data = adult,
+   target = "resposta",
+   type = 1,
+   # nlim = NULL,
+   fname = NULL,
+   col = c("blue", "red"),
+   Page = c(3, 2),
+   sample = NULL
+)
 
 adult %>%
    mutate(
@@ -120,3 +120,5 @@ table(adult$sex, adult$resposta)
 table(adult$workclass, adult$resposta)
 table(adult$race, adult$resposta)
 
+
+# Tentando uma arvore para abrir as variaveis -----------------------------
