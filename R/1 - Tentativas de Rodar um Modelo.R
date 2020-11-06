@@ -1,12 +1,12 @@
 cls <- function() cat("\f")
 
 
-# 0. Bibliotecas para a Análise -------------------------------------------
+# 0.0 - Bibliotecas para a Análise ----------------------------------------
 library(tidyverse)
 library(tidymodels)
 
 
-# 1. Importando os dados --------------------------------------------------
+# 1.0 - Importando os dados -----------------------------------------------
 adult_val <- readRDS(file = "data-raw/adult_val.rds")
 
 adult <- readRDS(file = "data-raw/adult.rds")
@@ -14,9 +14,12 @@ adult <- readRDS(file = "data-raw/adult.rds")
 adult %>% glimpse()
 
 
-# 2. Limpeza dos dados ----------------------------------------------------
+# 2.0 - Limpeza dos dados -------------------------------------------------
 
+
+# 2.1 - Criando fatores ordenados de dados categoricos --------------------
 adult2 <- adult %>%
+   select(-id) %>%
    mutate(
       relationship = factor(
          relationship,
@@ -173,6 +176,8 @@ cls()
 adult %>% glimpse()
 adult2 %>% glimpse()
 
+
+# 2.2 - Olhando como ficou a base de dados --------------------------------
 SmartEDA::ExpNumViz(
    data = adult2,
    target = "resposta",
@@ -190,7 +195,7 @@ IV <- adult2 %>%
                         yes = 0L,
                         no = 1L)
    ) %>%
-   select(-id, -resposta) %>%
+   select(-resposta) %>%
    Information::create_infotables(
       y = "resp_num",
       bins = 20,
@@ -223,27 +228,155 @@ table(adult2$workclass, adult2$resposta)
 table(adult2$race, adult2$resposta)
 
 
-# 3. Modelagem ------------------------------------------------------------
+# 3.0 - Modelagem ---------------------------------------------------------
+cls()
 
-split <- initial_split(data = adult2, strata = resposta, prop = 3/4)
+
+# 3.1 - Separacao de Base de Treino e Base de Teste -----------------------
+split <- adult2 %>%
+   initial_split(strata = resposta, prop = 3/4)
 split
 
-adult_train <- training(split)
-adult_test <- testing(split)
+train_adult <- training(split)
+tests_adult <- testing(split)
 
-# Validacao Cruzada...
+# Budega de Modelo ----
 
-adult_resamples <- vfold_cv(adult_train, v = 10)
-
-# Definicao de Modelo...
-
+# 3.5 - Modelo de Arvore de Decisao ---------------------------------------
 adult_tree_model <- decision_tree(
-   cost_complexity = tune(),
+   cost_complexity = 0.001,
    min_n = 5,
    tree_depth = tune()
 ) %>%
    set_engine("rpart") %>%
    set_mode("classification")
+
+
+# 3.2 - Cross Validation por K-folds --------------------------------------
+adult_resamples <- vfold_cv(
+   data = train_adult,
+   v = 5,
+   strata = resposta
+)
+adult_resamples
+
+
+
+# 3.3 - Pre-processamento -------------------------------------------------
+adult2 %>% map_dbl(~mean(is.na(.x))) %>% scales::percent()
+
+ls("package:recipes") %>%  .[str_starts(., "step_")]
+
+rec_medianimpute_modeimpute_zv_dummy <- recipe(
+   formula = resposta ~ .,
+   data = train_adult
+) %>%
+   step_zv(all_predictors()) %>%
+   step_medianimpute(all_numeric()) %>%
+   step_modeimpute(all_nominal(), -resposta) %>%
+   step_dummy(all_nominal())
+
+rec_medianimpute_modeimpute_zv_dummy$var_info
+rec_medianimpute_modeimpute_zv_dummy
+
+# prep(rec_medianimpute_modeimpute_zv_dummy)
+# prep(rec_medianimpute_modeimpute_zv_dummy) %>%
+#    bake(train_adult)
+
+
+# 3.4 - Modelo de Regressao Logistica -------------------------------------
+adult_logi_model <- logistic_reg(
+   # penalty = tune(),
+   # mixture = 1
+) %>%
+   set_engine("glm") %>%
+   set_mode("classification")
+
+rl_workflow <-
+   workflow() %>%
+   add_recipe(rec_medianimpute_modeimpute_zv_dummy) %>%
+   add_model(adult_logi_model)
+
+rl_workflow
+
+rl_fit <- rl_workflow %>%
+   fit_resamples(adult_resamples,
+                 metrics = metric_set(roc_auc, accuracy, sens, spec),
+                 control = control_resamples(save_pred = TRUE)
+   )
+
+
+
+
+
+
+
+
+# 3.5 - Modelo de Arvore de Decisao ---------------------------------------
+# adult_tree_model <- decision_tree(
+#    cost_complexity = tune(),
+#    min_n = 5,
+#    tree_depth = tune()
+# ) %>%
+#    set_engine("rpart") %>%
+#    set_mode("classification")
+
+
+# 3.6 - Modelo de Random Forest -------------------------------------------
+adult_rand_model <- rand_forest(
+   mtry = tune(),
+   trees = tune(),
+   min_n = tune()
+) %>%
+   set_engine("ranger") %>%
+   set_mode("classification")
+
+
+# 4.0 - Workflows ---------------------------------------------------------
+
+
+# 4.1 - Workflow da Regressao Logistica -----------------------------------
+adult_logi_wf <- workflow() %>%
+   add_recipe(rec_medianimpute_modeimpute_zv_dummy) %>%
+   add_model(adult_logi_model)
+adult_logi_wf
+
+
+# 4.2 - Workflow de Arvores de Decisao ------------------------------------
+adult_tree_wf <- workflow() %>%
+   add_recipe(rec_medianimpute_modeimpute_zv_dummy) %>%
+   add_model(adult_tree_model)
+adult_tree_wf
+
+
+# 4.3 - Workflow de Random Forest -----------------------------------------
+adult_rand_wf <- workflow() %>%
+   add_recipe(rec_medianimpute_modeimpute_zv_dummy) %>%
+   add_model(adult_rand_model)
+adult_rand_wf
+
+
+# 5.0 - Processamento dos Modelos -----------------------------------------
+
+# Tunagem de Hiperparametros ----------------------------------------------
+adult_tune_grid <- tune_grid(
+   model = adult_tree_model,
+   resamples = adult_resamples,
+   grid = 10,
+   metrics = metric_set(roc_auc, accuracy, sens, spec),
+   control = control_grid(verbose = TRUE, allow_par = TRUE)
+)
+
+
+
+# 5.1 - Processamento da Regressao Logistica ------------------------------
+adult_logi_fit <- adult_logi_wf %>%
+   fit_resamples(
+      resamples = folds,
+      metrics = metric_set(roc_auc, accuracy, sens, spec),
+      control = control_resamples(save_pred = TRUE)
+   )
+
 
 # Tunagem...
 
