@@ -5,6 +5,8 @@ library(vip)
 library(tidyverse)
 library(tidymodels)
 
+Allocated_Memory <- paste(memory.size(), "Mb")
+
 
 # 1 - Importar as Bases ---------------------------------------------------
 # httr::GET("https://github.com/curso-r/main-intro-ml/raw/master/dados/adult.rds", httr::write_disk("adult.rds", overwrite = TRUE))
@@ -196,6 +198,8 @@ adult2 <- adult %>%
     )
   )
 
+Allocated_Memory <- paste(memory.size(), "Mb")
+
 
 # 3 - Rapido EDA ----------------------------------------------------------
 cls()
@@ -372,6 +376,8 @@ collect_metrics(adult_ad_tune_grid) %>%
   facet_wrap(~.metric, scales = "free") +
   scale_x_log10()
 
+Allocated_Memory <- paste(memory.size(), "Mb")
+
 
 # 9 - Modelos Finais e Submissao ------------------------------------------
 graphics.off()
@@ -489,4 +495,5 @@ dim(adult_val_submissao)
 # Limpando os Arquivos Temporarios ----------------------------------------
 graphics.off()
 cls()
+Allocated_Memory <- paste(memory.size(), "Mb")
 rm(list = ls())
