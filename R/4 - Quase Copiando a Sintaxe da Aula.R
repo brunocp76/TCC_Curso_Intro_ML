@@ -296,7 +296,7 @@ recipe_adult <- recipe(
 # 6.1 - Regressao Logistica -----------------------------------------------
 adult_rl_model <- logistic_reg(
   penalty = tune(),
-  mixture = 1
+  mixture = tune()
 ) %>%
   set_mode("classification") %>%
   set_engine("glmnet")
@@ -343,7 +343,7 @@ adult_resamples
 adult_rl_tune_grid <- tune_grid(
   object = adult_rl_wf,
   resamples = adult_resamples,
-  grid = 300,
+  grid = 2000,
   metrics = metric_set(roc_auc)
 )
 
