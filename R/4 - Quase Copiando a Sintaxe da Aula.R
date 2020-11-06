@@ -343,7 +343,7 @@ adult_resamples
 adult_rl_tune_grid <- tune_grid(
   object = adult_rl_wf,
   resamples = adult_resamples,
-  grid = 2000,
+  grid = 100,
   metrics = metric_set(roc_auc)
 )
 
@@ -352,7 +352,7 @@ adult_rl_tune_grid <- tune_grid(
 adult_ad_tune_grid <- tune_grid(
   object = adult_ad_wf,
   resamples = adult_resamples,
-  grid = 50,
+  grid = 10,
   metrics = metric_set(roc_auc)
 )
 
