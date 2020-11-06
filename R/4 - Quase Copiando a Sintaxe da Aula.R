@@ -26,248 +26,248 @@ adult %>% count(resposta)
 
 # Para ordenar os valores, olharei a WOE, ou Weight of Evidence das variaveis nominais...
 
-IV0 <- adult %>%
-  select(-id) %>%
-  mutate(
-    resp_num = ifelse(test = resposta == "<=50K",
-                      yes = 0L,
-                      no = 1L)
-  ) %>%
-  select(-resposta) %>%
-  Information::create_infotables(
-    y = "resp_num",
-    bins = 20,
-    parallel = FALSE
-  )
-IV0
-
-IV0$Tables$relationship %>% arrange(WOE)
-IV0$Tables$marital_status %>% arrange(WOE)
-IV0$Tables$occupation %>% arrange(WOE)
-IV0$Tables$education %>% arrange(WOE)
-IV0$Tables$sex %>% arrange(WOE)
-IV0$Tables$workclass %>% arrange(WOE)
-IV0$Tables$native_country %>% arrange(WOE)
-IV0$Tables$race %>% arrange(WOE)
-
-
-adult2 <- adult %>%
-  select(-id) %>%
-  mutate(
-    relationship = factor(
-      relationship,
-      levels = c(
-        'Own-child',
-        'Other-relative',
-        'Unmarried',
-        'Not-in-family',
-        'Husband',
-        'Wife'
-      )
-    ),
-    marital_status = factor(
-      marital_status,
-      levels = c(
-        'Never-married',
-        'Separated',
-        'Married-spouse-absent',
-        'Widowed',
-        'Divorced',
-        'Married-AF-spouse',
-        'Married-civ-spouse'
-      )
-    ),
-    occupation = factor(
-      occupation,
-      levels = c(
-        'Priv-house-serv',
-        'Other-service',
-        'Handlers-cleaners',
-        NA,
-        'Armed-Forces',
-        'Farming-fishing',
-        'Machine-op-inspct',
-        'Adm-clerical',
-        'Transport-moving',
-        'Craft-repair',
-        'Sales',
-        'Tech-support',
-        'Protective-serv',
-        'Prof-specialty',
-        'Exec-managerial'
-      )
-    ),
-    education = factor(
-      education,
-      levels = c(
-        'Preschool',
-        '1st-4th',
-        '5th-6th',
-        '7th-8th',
-        '9th',
-        '10th',
-        '11th',
-        '12th',
-        'HS-grad',
-        'Some-college',
-        'Assoc-acdm',
-        'Assoc-voc',
-        'Bachelors',
-        'Masters',
-        'Prof-school',
-        'Doctorate'
-      )
-    ),
-    sex = factor(
-      sex,
-      levels = c(
-        'Female',
-        'Male'
-      )
-    ),
-    workclass = factor(
-      workclass,
-      levels = c(
-        NA,
-        'Private',
-        'Never-worked',
-        'Without-pay',
-        'State-gov',
-        'Self-emp-not-inc',
-        'Local-gov',
-        'Federal-gov',
-        'Self-emp-inc'
-      )
-    ),
-    native_country = factor(
-      native_country,
-      levels = c(
-        'Dominican-Republic',
-        'Columbia',
-        'Guatemala',
-        'Mexico',
-        'Nicaragua',
-        'Peru',
-        'Vietnam',
-        'Honduras',
-        'El-Salvador',
-        'Haiti',
-        'Puerto-Rico',
-        'Trinadad&Tobago',
-        'Portugal',
-        'Laos',
-        'Jamaica',
-        'Ecuador',
-        'Thailand',
-        'Poland',
-        'South',
-        'Ireland',
-        'Hungary',
-        'Holand-Netherlands',
-        'Outlying-US(Guam-USVI-etc)',
-        'United-States',
-        'Scotland',
-        NA,
-        'Cuba',
-        'China',
-        'Greece',
-        'Hong',
-        'Philippines',
-        'Germany',
-        'Canada',
-        'England',
-        'Italy',
-        'Cambodia',
-        'Yugoslavia',
-        'Japan',
-        'Taiwan',
-        'India',
-        'France',
-        'Iran'
-      )
-    ),
-    race = factor(
-      race,
-      levels = c(
-        'Other',
-        'Amer-Indian-Eskimo',
-        'Black',
-        'White',
-        'Asian-Pac-Islander'
-      )
-    )
-  )
-
-Allocated_Memory <- paste(memory.size(), "Mb")
-
-
-# 3 - Rapido EDA ----------------------------------------------------------
-cls()
-adult %>% glimpse()
-adult2 %>% glimpse()
-
-SmartEDA::ExpNumViz(
-  data = adult2,
-  target = "resposta",
-  type = 1,
-  # nlim = NULL,
-  fname = NULL,
-  col = c("blue", "red"),
-  Page = c(3, 2),
-  sample = NULL
-)
-
-IV <- adult2 %>%
-  mutate(
-    resp_num = ifelse(test = resposta == "<=50K",
-                      yes = 0L,
-                      no = 1L)
-  ) %>%
-  select(-resposta) %>%
-  Information::create_infotables(
-    y = "resp_num",
-    bins = 20,
-    parallel = TRUE
-  )
-IV
-
-IV$Tables$relationship %>% arrange(WOE)
-IV$Tables$marital_status %>% arrange(WOE)
-IV$Tables$occupation %>% arrange(WOE)
-IV$Tables$education %>% arrange(WOE)
-IV$Tables$sex %>% arrange(WOE)
-IV$Tables$workclass %>% arrange(WOE)
-IV$Tables$native_country %>% arrange(WOE)
-IV$Tables$race %>% arrange(WOE)
-
-SmartEDA::ExpCatStat(
-  data = adult2,
-  Target = "resposta",
-  result = "Stat",
-  clim = 20,
-  # nlim = NULL,
-  bins = 20,
-  plot = FALSE,
-  top = 30,
-  Round = 5
-) %>%
-  filter(Variable != "id") %>%
-  arrange(desc(`Cramers V`), desc(`Chi-squared`))
-
-# Agora que ordenei as variaveis categoricas de acordo com a resposta...
-
-table(adult2$relationship, adult2$resposta)
-table(adult2$marital_status, adult2$resposta)
-table(adult2$occupation, adult2$resposta)
-table(adult2$education, adult2$resposta)
-table(adult2$sex, adult2$resposta)
-table(adult2$workclass, adult2$resposta)
-table(adult2$race, adult2$resposta)
+# IV0 <- adult %>%
+#   select(-id) %>%
+#   mutate(
+#     resp_num = ifelse(test = resposta == "<=50K",
+#                       yes = 0L,
+#                       no = 1L)
+#   ) %>%
+#   select(-resposta) %>%
+#   Information::create_infotables(
+#     y = "resp_num",
+#     bins = 20,
+#     parallel = FALSE
+#   )
+# IV0
+#
+# IV0$Tables$relationship %>% arrange(WOE)
+# IV0$Tables$marital_status %>% arrange(WOE)
+# IV0$Tables$occupation %>% arrange(WOE)
+# IV0$Tables$education %>% arrange(WOE)
+# IV0$Tables$sex %>% arrange(WOE)
+# IV0$Tables$workclass %>% arrange(WOE)
+# IV0$Tables$native_country %>% arrange(WOE)
+# IV0$Tables$race %>% arrange(WOE)
+#
+#
+# adult2 <- adult %>%
+#   select(-id) %>%
+#   mutate(
+#     relationship = factor(
+#       relationship,
+#       levels = c(
+#         'Own-child',
+#         'Other-relative',
+#         'Unmarried',
+#         'Not-in-family',
+#         'Husband',
+#         'Wife'
+#       )
+#     ),
+#     marital_status = factor(
+#       marital_status,
+#       levels = c(
+#         'Never-married',
+#         'Separated',
+#         'Married-spouse-absent',
+#         'Widowed',
+#         'Divorced',
+#         'Married-AF-spouse',
+#         'Married-civ-spouse'
+#       )
+#     ),
+#     occupation = factor(
+#       occupation,
+#       levels = c(
+#         'Priv-house-serv',
+#         'Other-service',
+#         'Handlers-cleaners',
+#         NA,
+#         'Armed-Forces',
+#         'Farming-fishing',
+#         'Machine-op-inspct',
+#         'Adm-clerical',
+#         'Transport-moving',
+#         'Craft-repair',
+#         'Sales',
+#         'Tech-support',
+#         'Protective-serv',
+#         'Prof-specialty',
+#         'Exec-managerial'
+#       )
+#     ),
+#     education = factor(
+#       education,
+#       levels = c(
+#         'Preschool',
+#         '1st-4th',
+#         '5th-6th',
+#         '7th-8th',
+#         '9th',
+#         '10th',
+#         '11th',
+#         '12th',
+#         'HS-grad',
+#         'Some-college',
+#         'Assoc-acdm',
+#         'Assoc-voc',
+#         'Bachelors',
+#         'Masters',
+#         'Prof-school',
+#         'Doctorate'
+#       )
+#     ),
+#     sex = factor(
+#       sex,
+#       levels = c(
+#         'Female',
+#         'Male'
+#       )
+#     ),
+#     workclass = factor(
+#       workclass,
+#       levels = c(
+#         NA,
+#         'Private',
+#         'Never-worked',
+#         'Without-pay',
+#         'State-gov',
+#         'Self-emp-not-inc',
+#         'Local-gov',
+#         'Federal-gov',
+#         'Self-emp-inc'
+#       )
+#     ),
+#     native_country = factor(
+#       native_country,
+#       levels = c(
+#         'Dominican-Republic',
+#         'Columbia',
+#         'Guatemala',
+#         'Mexico',
+#         'Nicaragua',
+#         'Peru',
+#         'Vietnam',
+#         'Honduras',
+#         'El-Salvador',
+#         'Haiti',
+#         'Puerto-Rico',
+#         'Trinadad&Tobago',
+#         'Portugal',
+#         'Laos',
+#         'Jamaica',
+#         'Ecuador',
+#         'Thailand',
+#         'Poland',
+#         'South',
+#         'Ireland',
+#         'Hungary',
+#         'Holand-Netherlands',
+#         'Outlying-US(Guam-USVI-etc)',
+#         'United-States',
+#         'Scotland',
+#         NA,
+#         'Cuba',
+#         'China',
+#         'Greece',
+#         'Hong',
+#         'Philippines',
+#         'Germany',
+#         'Canada',
+#         'England',
+#         'Italy',
+#         'Cambodia',
+#         'Yugoslavia',
+#         'Japan',
+#         'Taiwan',
+#         'India',
+#         'France',
+#         'Iran'
+#       )
+#     ),
+#     race = factor(
+#       race,
+#       levels = c(
+#         'Other',
+#         'Amer-Indian-Eskimo',
+#         'Black',
+#         'White',
+#         'Asian-Pac-Islander'
+#       )
+#     )
+#   )
+#
+# Allocated_Memory <- paste(memory.size(), "Mb")
+#
+#
+# # 3 - Rapido EDA ----------------------------------------------------------
+# cls()
+# adult %>% glimpse()
+# adult2 %>% glimpse()
+#
+# SmartEDA::ExpNumViz(
+#   data = adult2,
+#   target = "resposta",
+#   type = 1,
+#   # nlim = NULL,
+#   fname = NULL,
+#   col = c("blue", "red"),
+#   Page = c(3, 2),
+#   sample = NULL
+# )
+#
+# IV <- adult2 %>%
+#   mutate(
+#     resp_num = ifelse(test = resposta == "<=50K",
+#                       yes = 0L,
+#                       no = 1L)
+#   ) %>%
+#   select(-resposta) %>%
+#   Information::create_infotables(
+#     y = "resp_num",
+#     bins = 20,
+#     parallel = TRUE
+#   )
+# IV
+#
+# IV$Tables$relationship %>% arrange(WOE)
+# IV$Tables$marital_status %>% arrange(WOE)
+# IV$Tables$occupation %>% arrange(WOE)
+# IV$Tables$education %>% arrange(WOE)
+# IV$Tables$sex %>% arrange(WOE)
+# IV$Tables$workclass %>% arrange(WOE)
+# IV$Tables$native_country %>% arrange(WOE)
+# IV$Tables$race %>% arrange(WOE)
+#
+# SmartEDA::ExpCatStat(
+#   data = adult2,
+#   Target = "resposta",
+#   result = "Stat",
+#   clim = 20,
+#   # nlim = NULL,
+#   bins = 20,
+#   plot = FALSE,
+#   top = 30,
+#   Round = 5
+# ) %>%
+#   filter(Variable != "id") %>%
+#   arrange(desc(`Cramers V`), desc(`Chi-squared`))
+#
+# # Agora que ordenei as variaveis categoricas de acordo com a resposta...
+#
+# table(adult2$relationship, adult2$resposta)
+# table(adult2$marital_status, adult2$resposta)
+# table(adult2$occupation, adult2$resposta)
+# table(adult2$education, adult2$resposta)
+# table(adult2$sex, adult2$resposta)
+# table(adult2$workclass, adult2$resposta)
+# table(adult2$race, adult2$resposta)
 
 
 # 4 - Bases de Treino e Validacao -----------------------------------------
 split <- initial_split(
-  data = adult2,
+  data = adult,
   strata = resposta,
   prop = 3/4
 )
@@ -343,7 +343,7 @@ adult_resamples
 adult_rl_tune_grid <- tune_grid(
   object = adult_rl_wf,
   resamples = adult_resamples,
-  grid = 50,
+  grid = 300,
   metrics = metric_set(roc_auc)
 )
 
