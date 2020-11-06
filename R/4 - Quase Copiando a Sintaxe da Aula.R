@@ -339,7 +339,7 @@ adult_resamples
 adult_rl_tune_grid <- tune_grid(
   object = adult_rl_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 50,
   metrics = metric_set(roc_auc)
 )
 
@@ -348,7 +348,7 @@ adult_rl_tune_grid <- tune_grid(
 adult_ad_tune_grid <- tune_grid(
   object = adult_ad_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 50,
   metrics = metric_set(roc_auc)
 )
 
@@ -374,6 +374,8 @@ collect_metrics(adult_ad_tune_grid) %>%
 
 
 # 9 - Modelos Finais e Submissao ------------------------------------------
+graphics.off()
+cls()
 
 
 # 9.1 - Melhor Modelo de Regressao Logistica ------------------------------
@@ -485,4 +487,6 @@ dim(adult_val_submissao)
 
 
 # Limpando os Arquivos Temporarios ----------------------------------------
+graphics.off()
+cls()
 rm(list = ls())
