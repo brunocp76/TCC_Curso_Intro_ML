@@ -365,7 +365,7 @@ adult_xb_wf <- workflow() %>%
 # 8.1 - Cross-Validation --------------------------------------------------
 adult_resamples <- vfold_cv(
   train_adult,
-  v = 5,
+  v = 10,
   strata = resposta
 )
 adult_resamples
@@ -375,7 +375,7 @@ adult_resamples
 adult_rl_tune_grid <- tune_grid(
   object = adult_rl_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 50,
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
@@ -385,7 +385,7 @@ adult_rl_tune_grid <- tune_grid(
 adult_ad_tune_grid <- tune_grid(
   object = adult_ad_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 50,
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
@@ -395,16 +395,16 @@ adult_ad_tune_grid <- tune_grid(
 adult_xb_tune_grid <- tune_grid(
   object = adult_xb_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 50,
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
 
 
 # 8.5 - Olhando as Metricas de Desempenho ---------------------------------
-collect_metrics(adult_rl_tune_grid) %>% arrange(desc(mean))
-collect_metrics(adult_ad_tune_grid) %>% arrange(desc(mean))
-collect_metrics(adult_xb_tune_grid) %>% arrange(desc(mean))
+collect_metrics(adult_rl_tune_grid) %>% arrange(desc(mean)) %>% print.data.frame()
+collect_metrics(adult_ad_tune_grid) %>% arrange(desc(mean)) %>% print.data.frame()
+collect_metrics(adult_xb_tune_grid) %>% arrange(desc(mean)) %>% print.data.frame()
 
 collect_metrics(adult_rl_tune_grid) %>%
   filter(penalty < 0.02) %>%
