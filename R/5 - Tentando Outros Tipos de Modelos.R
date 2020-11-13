@@ -518,6 +518,8 @@ knn_spec <-
    set_mode("classification") %>%
    set_engine("kknn")
 
+knn_spec
+
 
 # 5.7 - Random Forest -----------------------------------------------------
 randomforest_spec <-
@@ -529,6 +531,8 @@ randomforest_spec <-
    ) %>%
    set_mode("classification") %>%
    set_engine("ranger")
+
+randomforest_spec
 
 
 # 5.8 - Polynomial Support Vector Machines --------------------------------
@@ -542,6 +546,8 @@ polysvm_spec <-
    set_mode("classification") %>%
    set_engine("kernlab")
 
+polysvm_spec
+
 
 # 5.9 - Radial Basis Function Support Vector Machines ---------------------
 radialsvm_spec <-
@@ -553,6 +559,8 @@ radialsvm_spec <-
    ) %>%
    set_mode("classification") %>%
    set_engine("kernlab")
+
+radialsvm_spec
 
 
 # 6 - Workflows -----------------------------------------------------------
