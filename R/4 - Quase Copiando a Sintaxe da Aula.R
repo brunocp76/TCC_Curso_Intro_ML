@@ -381,7 +381,11 @@ adult_resamples
 adult_rl_tune_grid <- tune_grid(
   object = adult_rl_wf,
   resamples = adult_resamples,
+<<<<<<< HEAD
   grid = 20,
+=======
+  grid = 50,
+>>>>>>> 7707e0e0cbd43ee907eb938379ab498686a7c9e9
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
@@ -391,7 +395,11 @@ adult_rl_tune_grid <- tune_grid(
 adult_ad_tune_grid <- tune_grid(
   object = adult_ad_wf,
   resamples = adult_resamples,
+<<<<<<< HEAD
   grid = 20,
+=======
+  grid = 50,
+>>>>>>> 7707e0e0cbd43ee907eb938379ab498686a7c9e9
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
@@ -401,7 +409,11 @@ adult_ad_tune_grid <- tune_grid(
 adult_xb_tune_grid <- tune_grid(
   object = adult_xb_wf,
   resamples = adult_resamples,
+<<<<<<< HEAD
   grid = 20,
+=======
+  grid = 50,
+>>>>>>> 7707e0e0cbd43ee907eb938379ab498686a7c9e9
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
