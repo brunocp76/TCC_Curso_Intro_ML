@@ -37,8 +37,9 @@ IV0 <- adult %>%
   Information::create_infotables(
     y = "resp_num",
     bins = 20,
-    parallel = FALSE
+    parallel = TRUE
   )
+cls()
 IV0
 
 IV0$Tables$relationship %>% arrange(WOE)
@@ -201,68 +202,69 @@ adult2 <- adult %>%
 Allocated_Memory <- paste(memory.size(), "Mb")
 
 
-# # 3 - Rapido EDA ----------------------------------------------------------
-# cls()
-# adult %>% glimpse()
-# adult2 %>% glimpse()
-#
-# SmartEDA::ExpNumViz(
-#   data = adult2,
-#   target = "resposta",
-#   type = 1,
-#   # nlim = NULL,
-#   fname = NULL,
-#   col = c("blue", "red"),
-#   Page = c(3, 2),
-#   sample = NULL
-# )
-#
-# IV <- adult2 %>%
-#   mutate(
-#     resp_num = ifelse(test = resposta == "<=50K",
-#                       yes = 0L,
-#                       no = 1L)
-#   ) %>%
-#   select(-resposta) %>%
-#   Information::create_infotables(
-#     y = "resp_num",
-#     bins = 20,
-#     parallel = TRUE
-#   )
-# IV
-#
-# IV$Tables$relationship %>% arrange(WOE)
-# IV$Tables$marital_status %>% arrange(WOE)
-# IV$Tables$occupation %>% arrange(WOE)
-# IV$Tables$education %>% arrange(WOE)
-# IV$Tables$sex %>% arrange(WOE)
-# IV$Tables$workclass %>% arrange(WOE)
-# IV$Tables$native_country %>% arrange(WOE)
-# IV$Tables$race %>% arrange(WOE)
-#
-# SmartEDA::ExpCatStat(
-#   data = adult2,
-#   Target = "resposta",
-#   result = "Stat",
-#   clim = 20,
-#   # nlim = NULL,
-#   bins = 20,
-#   plot = FALSE,
-#   top = 30,
-#   Round = 5
-# ) %>%
-#   filter(Variable != "id") %>%
-#   arrange(desc(`Cramers V`), desc(`Chi-squared`))
-#
-# # Agora que ordenei as variaveis categoricas de acordo com a resposta...
-#
-# table(adult2$relationship, adult2$resposta)
-# table(adult2$marital_status, adult2$resposta)
-# table(adult2$occupation, adult2$resposta)
-# table(adult2$education, adult2$resposta)
-# table(adult2$sex, adult2$resposta)
-# table(adult2$workclass, adult2$resposta)
-# table(adult2$race, adult2$resposta)
+# 3 - Rapido EDA ----------------------------------------------------------
+cls()
+adult %>% glimpse()
+adult2 %>% glimpse()
+
+SmartEDA::ExpNumViz(
+  data = adult2,
+  target = "resposta",
+  type = 1,
+  # nlim = NULL,
+  fname = NULL,
+  col = c("blue", "red"),
+  Page = c(3, 2),
+  sample = NULL
+)
+
+IV <- adult2 %>%
+  mutate(
+    resp_num = ifelse(test = resposta == "<=50K",
+                      yes = 0L,
+                      no = 1L)
+  ) %>%
+  select(-resposta) %>%
+  Information::create_infotables(
+    y = "resp_num",
+    bins = 20,
+    parallel = TRUE
+  )
+cls()
+IV
+
+IV$Tables$relationship %>% arrange(WOE)
+IV$Tables$marital_status %>% arrange(WOE)
+IV$Tables$occupation %>% arrange(WOE)
+IV$Tables$education %>% arrange(WOE)
+IV$Tables$sex %>% arrange(WOE)
+IV$Tables$workclass %>% arrange(WOE)
+IV$Tables$native_country %>% arrange(WOE)
+IV$Tables$race %>% arrange(WOE)
+
+SmartEDA::ExpCatStat(
+  data = adult2,
+  Target = "resposta",
+  result = "Stat",
+  clim = 20,
+  # nlim = NULL,
+  bins = 20,
+  plot = FALSE,
+  top = 30,
+  Round = 5
+) %>%
+  filter(Variable != "id") %>%
+  arrange(desc(`Cramers V`), desc(`Chi-squared`))
+
+# Agora que ordenei as variaveis categoricas de acordo com a resposta...
+
+table(adult2$relationship, adult2$resposta)
+table(adult2$marital_status, adult2$resposta)
+table(adult2$occupation, adult2$resposta)
+table(adult2$education, adult2$resposta)
+table(adult2$sex, adult2$resposta)
+table(adult2$workclass, adult2$resposta)
+table(adult2$race, adult2$resposta)
 
 
 # 4 - Bases de Treino e Validacao -----------------------------------------
@@ -277,7 +279,7 @@ train_adult <- training(split)
 tests_adult <- testing(split)
 
 
-# 5 - Uma Receita no Capricho... ------------------------------------------
+# 5 - Duas Receitas no Capricho... ----------------------------------------
 recipe_adult <- recipe(
   resposta ~ .,
   data = train_adult
@@ -286,8 +288,10 @@ recipe_adult <- recipe(
   step_modeimpute(all_nominal(), -all_outcomes()) %>%
   step_medianimpute(all_numeric(), -all_outcomes()) %>%
   step_novel(all_nominal(), -all_outcomes()) %>%
-  step_pca(all_numeric()) %>%
+  # step_pca(all_numeric()) %>%
   step_dummy(all_nominal(), -all_outcomes())
+
+recipe_adult
 
 recipe_adult_xb <- recipe(
   resposta ~ .,
@@ -299,8 +303,10 @@ recipe_adult_xb <- recipe(
   step_center(all_numeric()) %>%
   step_scale(all_numeric()) %>%
   step_novel(all_nominal(), -all_outcomes()) %>%
-  step_pca(all_numeric()) %>%
+  # step_pca(all_numeric()) %>%
   step_dummy(all_nominal(), -all_outcomes())
+
+recipe_adult_xb
 
 
 # 6 - Definindo os Modelos ------------------------------------------------
@@ -325,7 +331,7 @@ adult_ad_model <- decision_tree(
   set_engine("rpart")
 
 
-# 6.3 - XGBoost (?) -------------------------------------------------------
+# 6.3 - XGBoost -----------------------------------------------------------
 adult_xb_model <- boost_tree(
   trees = tune(),
   min_n = tune(),
@@ -365,7 +371,7 @@ adult_xb_wf <- workflow() %>%
 # 8.1 - Cross-Validation --------------------------------------------------
 adult_resamples <- vfold_cv(
   train_adult,
-  v = 5,
+  v = 10,
   strata = resposta
 )
 adult_resamples
@@ -375,7 +381,7 @@ adult_resamples
 adult_rl_tune_grid <- tune_grid(
   object = adult_rl_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 20,
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
@@ -385,7 +391,7 @@ adult_rl_tune_grid <- tune_grid(
 adult_ad_tune_grid <- tune_grid(
   object = adult_ad_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 20,
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
@@ -395,16 +401,16 @@ adult_ad_tune_grid <- tune_grid(
 adult_xb_tune_grid <- tune_grid(
   object = adult_xb_wf,
   resamples = adult_resamples,
-  grid = 10,
+  grid = 20,
   metrics = metric_set(roc_auc),
   control = control_grid(verbose = TRUE, allow_par = TRUE)
 )
 
 
 # 8.5 - Olhando as Metricas de Desempenho ---------------------------------
-collect_metrics(adult_rl_tune_grid) %>% arrange(desc(mean))
-collect_metrics(adult_ad_tune_grid) %>% arrange(desc(mean))
-collect_metrics(adult_xb_tune_grid) %>% arrange(desc(mean))
+collect_metrics(adult_rl_tune_grid) %>% arrange(desc(mean)) %>% print.data.frame()
+collect_metrics(adult_ad_tune_grid) %>% arrange(desc(mean)) %>% print.data.frame()
+collect_metrics(adult_xb_tune_grid) %>% arrange(desc(mean)) %>% print.data.frame()
 
 collect_metrics(adult_rl_tune_grid) %>%
   filter(penalty < 0.02) %>%
