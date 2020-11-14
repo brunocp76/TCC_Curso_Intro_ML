@@ -382,6 +382,8 @@ knn_recipe <-
       formula = resposta ~ .,
       data = train_adult
    ) %>%
+   step_modeimpute(all_nominal(), -all_outcomes()) %>%
+   step_medianimpute(all_numeric(), -all_outcomes()) %>%
    ## For modeling, it is preferred to encode qualitative data as factors
    ## (instead of character).
    ## I have done this already...
@@ -484,7 +486,7 @@ earth_spec <-
       mode = "classification",
       num_terms = tune(),
       prod_degree = tune(),
-      prune_method = tune()
+      prune_method = "backward"
    ) %>%
    set_mode("classification") %>%
    set_engine("earth")
@@ -496,10 +498,10 @@ earth_spec
 neural_spec <-
    mlp(
       mode = "classification",
-      hidden_units = tune(),
-      penalty = tune(),
-      dropout = tune(),
-      epochs = tune(),
+      hidden_units = seq(1, 10, 1),
+      penalty = seq(0, 1, 0.1),
+      dropout = "none",
+      epochs = seq(10, 30, 2),
       activation = tune()
    ) %>%
    set_mode("classification") %>%
@@ -650,7 +652,10 @@ adult_resamples
 # 7.1 - Modelos Lineares Generalizados ------------------------------------
 glm_grid <-
    tidyr::crossing(
-      penalty = c(10^seq(-6, -1, length.out = 20), 0.000000115, 0.00000217, 0.000477),
+      penalty = c(
+         10^seq(-6, -1, length.out = 20),
+         0.000000115, 0.00000217, 0.00078476, 0.000477
+      ),
       mixture = c(0.05, 0.2, 0.4, 0.6, 0.8, 0.833, 0.918, 0.975, 1)
    )
 
@@ -682,7 +687,7 @@ logistic_tune <-
 # 7.2 - Arvore de Decisao -------------------------------------------------
 arvore_tune <-
    tune_grid(
-      object = adult_ad_wf,
+      object = arvore_workflow,
       resamples = adult_resamples,
       grid = 10,
       metrics = metric_set(roc_auc),
@@ -698,7 +703,7 @@ xgboost_tune <-
    tune_grid(
       object = xgboost_workflow,
       resamples = adult_resamples,
-      grid = 3,
+      grid = 20,
       metrics = metric_set(roc_auc),
       control = control_grid(
          verbose = TRUE,
@@ -735,7 +740,7 @@ earth_tune <-
 # 7.5 - Multilayer Perceptron ---------------------------------------------
 neural_tune <-
    tune_grid(
-      object = adult_mp_wf,
+      object = neural_workflow,
       resamples = adult_resamples,
       grid = 10,
       metrics = metric_set(roc_auc),
@@ -777,9 +782,9 @@ randomforest_tune <-
 # 7.8 - Polynomial Support Vector Machines --------------------------------
 polysvm_tune <-
    tune_grid(
-      object = adult_ps_wf,
+      object = polysvm_workflow,
       resamples = adult_resamples,
-      grid = 5,
+      grid = 4,
       metrics = metric_set(roc_auc),
       control = control_grid(
          verbose = TRUE,
@@ -791,7 +796,7 @@ polysvm_tune <-
 # 7.9 - Radial Basis Function Support Vector Machines ---------------------
 radialsvm_tune <-
    tune_grid(
-      object = adult_rs_wf,
+      object = radialsvm_workflow,
       resamples = adult_resamples,
       grid = 4,
       metrics = metric_set(roc_auc),
@@ -845,7 +850,7 @@ glm_best_params <-
 
 logistic_best_params <-
    select_best(
-      x = logistica_tune,
+      x = logistic_tune,
       metric = "roc_auc"
    )
 
@@ -937,7 +942,7 @@ glm_workflow
 logistic_workflow <-
    logistic_workflow %>%
    finalize_workflow(logistic_best_params)
-adult_rl_wf
+logistic_workflow
 
 arvore_workflow <-
    arvore_workflow %>%
