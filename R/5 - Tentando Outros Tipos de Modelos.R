@@ -500,12 +500,12 @@ neural_spec <-
       mode = "classification",
       hidden_units = seq(1, 10, 1),
       penalty = seq(0, 1, 0.1),
-      dropout = "none",
-      epochs = seq(10, 30, 2),
-      activation = tune()
+      # dropout = "none",
+      epochs = seq(10, 30, 2)
+      # activation = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("keras")
+   set_engine("nnet")
 
 neural_spec
 
@@ -532,7 +532,7 @@ randomforest_spec <-
       trees = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("ranger")
+   set_engine("ranger", num.threads = 8, verbose = TRUE)
 
 randomforest_spec
 
@@ -643,7 +643,7 @@ radialsvm_workflow <-
 adult_resamples <-
    vfold_cv(
       train_adult,
-      v = 5,
+      v = 10,
       strata = resposta
    )
 adult_resamples
@@ -703,7 +703,7 @@ xgboost_tune <-
    tune_grid(
       object = xgboost_workflow,
       resamples = adult_resamples,
-      grid = 20,
+      grid = 100,
       metrics = metric_set(roc_auc),
       control = control_grid(
          verbose = TRUE,
