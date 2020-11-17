@@ -29,18 +29,18 @@ Allocated_Memory <- paste(memory.size(), "Mb")
 # Para ordenar os valores, olharei a WOE, ou Weight of Evidence das variaveis nominais...
 
 IV0 <- adult %>%
-  select(-id) %>%
-  mutate(
-    resp_num = ifelse(test = resposta == "<=50K",
-                      yes = 0L,
-                      no = 1L)
-  ) %>%
-  select(-resposta) %>%
-  Information::create_infotables(
-    y = "resp_num",
-    bins = 20,
-    parallel = FALSE
-  )
+   select(-id) %>%
+   mutate(
+      resp_num = ifelse(test = resposta == "<=50K",
+                        yes = 0L,
+                        no = 1L)
+   ) %>%
+   select(-resposta) %>%
+   Information::create_infotables(
+      y = "resp_num",
+      bins = 20,
+      parallel = FALSE
+   )
 IV0
 
 IV0$Tables$relationship %>% arrange(WOE)
@@ -54,151 +54,151 @@ IV0$Tables$race %>% arrange(WOE)
 
 
 adult2 <- adult %>%
-  select(-id) %>%
-  mutate(
-    relationship = factor(
-      relationship,
-      levels = c(
-        'Own-child',
-        'Other-relative',
-        'Unmarried',
-        'Not-in-family',
-        'Husband',
-        'Wife'
+   select(-id) %>%
+   mutate(
+      relationship = factor(
+         relationship,
+         levels = c(
+            'Own-child',
+            'Other-relative',
+            'Unmarried',
+            'Not-in-family',
+            'Husband',
+            'Wife'
+         )
+      ),
+      marital_status = factor(
+         marital_status,
+         levels = c(
+            'Never-married',
+            'Separated',
+            'Married-spouse-absent',
+            'Widowed',
+            'Divorced',
+            'Married-AF-spouse',
+            'Married-civ-spouse'
+         )
+      ),
+      occupation = factor(
+         occupation,
+         levels = c(
+            'Priv-house-serv',
+            'Other-service',
+            'Handlers-cleaners',
+            NA,
+            'Armed-Forces',
+            'Farming-fishing',
+            'Machine-op-inspct',
+            'Adm-clerical',
+            'Transport-moving',
+            'Craft-repair',
+            'Sales',
+            'Tech-support',
+            'Protective-serv',
+            'Prof-specialty',
+            'Exec-managerial'
+         )
+      ),
+      education = factor(
+         education,
+         levels = c(
+            'Preschool',
+            '1st-4th',
+            '5th-6th',
+            '7th-8th',
+            '9th',
+            '10th',
+            '11th',
+            '12th',
+            'HS-grad',
+            'Some-college',
+            'Assoc-acdm',
+            'Assoc-voc',
+            'Bachelors',
+            'Masters',
+            'Prof-school',
+            'Doctorate'
+         )
+      ),
+      sex = factor(
+         sex,
+         levels = c(
+            'Female',
+            'Male'
+         )
+      ),
+      workclass = factor(
+         workclass,
+         levels = c(
+            NA,
+            'Private',
+            'Never-worked',
+            'Without-pay',
+            'State-gov',
+            'Self-emp-not-inc',
+            'Local-gov',
+            'Federal-gov',
+            'Self-emp-inc'
+         )
+      ),
+      native_country = factor(
+         native_country,
+         levels = c(
+            'Dominican-Republic',
+            'Columbia',
+            'Guatemala',
+            'Mexico',
+            'Nicaragua',
+            'Peru',
+            'Vietnam',
+            'Honduras',
+            'El-Salvador',
+            'Haiti',
+            'Puerto-Rico',
+            'Trinadad&Tobago',
+            'Portugal',
+            'Laos',
+            'Jamaica',
+            'Ecuador',
+            'Thailand',
+            'Poland',
+            'South',
+            'Ireland',
+            'Hungary',
+            'Holand-Netherlands',
+            'Outlying-US(Guam-USVI-etc)',
+            'United-States',
+            'Scotland',
+            NA,
+            'Cuba',
+            'China',
+            'Greece',
+            'Hong',
+            'Philippines',
+            'Germany',
+            'Canada',
+            'England',
+            'Italy',
+            'Cambodia',
+            'Yugoslavia',
+            'Japan',
+            'Taiwan',
+            'India',
+            'France',
+            'Iran'
+         )
+      ),
+      race = factor(
+         race,
+         levels = c(
+            'Other',
+            'Amer-Indian-Eskimo',
+            'Black',
+            'White',
+            'Asian-Pac-Islander'
+         )
       )
-    ),
-    marital_status = factor(
-      marital_status,
-      levels = c(
-        'Never-married',
-        'Separated',
-        'Married-spouse-absent',
-        'Widowed',
-        'Divorced',
-        'Married-AF-spouse',
-        'Married-civ-spouse'
-      )
-    ),
-    occupation = factor(
-      occupation,
-      levels = c(
-        'Priv-house-serv',
-        'Other-service',
-        'Handlers-cleaners',
-        NA,
-        'Armed-Forces',
-        'Farming-fishing',
-        'Machine-op-inspct',
-        'Adm-clerical',
-        'Transport-moving',
-        'Craft-repair',
-        'Sales',
-        'Tech-support',
-        'Protective-serv',
-        'Prof-specialty',
-        'Exec-managerial'
-      )
-    ),
-    education = factor(
-      education,
-      levels = c(
-        'Preschool',
-        '1st-4th',
-        '5th-6th',
-        '7th-8th',
-        '9th',
-        '10th',
-        '11th',
-        '12th',
-        'HS-grad',
-        'Some-college',
-        'Assoc-acdm',
-        'Assoc-voc',
-        'Bachelors',
-        'Masters',
-        'Prof-school',
-        'Doctorate'
-      )
-    ),
-    sex = factor(
-      sex,
-      levels = c(
-        'Female',
-        'Male'
-      )
-    ),
-    workclass = factor(
-      workclass,
-      levels = c(
-        NA,
-        'Private',
-        'Never-worked',
-        'Without-pay',
-        'State-gov',
-        'Self-emp-not-inc',
-        'Local-gov',
-        'Federal-gov',
-        'Self-emp-inc'
-      )
-    ),
-    native_country = factor(
-      native_country,
-      levels = c(
-        'Dominican-Republic',
-        'Columbia',
-        'Guatemala',
-        'Mexico',
-        'Nicaragua',
-        'Peru',
-        'Vietnam',
-        'Honduras',
-        'El-Salvador',
-        'Haiti',
-        'Puerto-Rico',
-        'Trinadad&Tobago',
-        'Portugal',
-        'Laos',
-        'Jamaica',
-        'Ecuador',
-        'Thailand',
-        'Poland',
-        'South',
-        'Ireland',
-        'Hungary',
-        'Holand-Netherlands',
-        'Outlying-US(Guam-USVI-etc)',
-        'United-States',
-        'Scotland',
-        NA,
-        'Cuba',
-        'China',
-        'Greece',
-        'Hong',
-        'Philippines',
-        'Germany',
-        'Canada',
-        'England',
-        'Italy',
-        'Cambodia',
-        'Yugoslavia',
-        'Japan',
-        'Taiwan',
-        'India',
-        'France',
-        'Iran'
-      )
-    ),
-    race = factor(
-      race,
-      levels = c(
-        'Other',
-        'Amer-Indian-Eskimo',
-        'Black',
-        'White',
-        'Asian-Pac-Islander'
-      )
-    )
-  )
+   )
 
 Allocated_Memory <- paste(memory.size(), "Mb")
 
@@ -208,28 +208,28 @@ adult %>% glimpse()
 adult2 %>% glimpse()
 
 SmartEDA::ExpNumViz(
-  data = adult2,
-  target = "resposta",
-  type = 1,
-  # nlim = NULL,
-  fname = NULL,
-  col = c("blue", "red"),
-  Page = c(3, 2),
-  sample = NULL
+   data = adult2,
+   target = "resposta",
+   type = 1,
+   # nlim = NULL,
+   fname = NULL,
+   col = c("blue", "red"),
+   Page = c(3, 2),
+   sample = NULL
 )
 
 IV <- adult2 %>%
-  mutate(
-    resp_num = ifelse(test = resposta == "<=50K",
-                      yes = 0L,
-                      no = 1L)
-  ) %>%
-  select(-resposta) %>%
-  Information::create_infotables(
-    y = "resp_num",
-    bins = 20,
-    parallel = TRUE
-  )
+   mutate(
+      resp_num = ifelse(test = resposta == "<=50K",
+                        yes = 0L,
+                        no = 1L)
+   ) %>%
+   select(-resposta) %>%
+   Information::create_infotables(
+      y = "resp_num",
+      bins = 20,
+      parallel = TRUE
+   )
 IV
 
 IV$Tables$relationship %>% arrange(WOE)
@@ -242,18 +242,18 @@ IV$Tables$native_country %>% arrange(WOE)
 IV$Tables$race %>% arrange(WOE)
 
 SmartEDA::ExpCatStat(
-  data = adult2,
-  Target = "resposta",
-  result = "Stat",
-  clim = 20,
-  # nlim = NULL,
-  bins = 20,
-  plot = FALSE,
-  top = 30,
-  Round = 5
+   data = adult2,
+   Target = "resposta",
+   result = "Stat",
+   clim = 20,
+   # nlim = NULL,
+   bins = 20,
+   plot = FALSE,
+   top = 30,
+   Round = 5
 ) %>%
-  filter(Variable != "id") %>%
-  arrange(desc(`Cramers V`), desc(`Chi-squared`))
+   filter(Variable != "id") %>%
+   arrange(desc(`Cramers V`), desc(`Chi-squared`))
 
 # Agora que ordenei as variaveis categoricas de acordo com a resposta...
 
@@ -347,6 +347,10 @@ xgboost_recipe <-
    ## predictors. However, for this model, binary indicator variables can be
    ## made for each of the levels of the factors (known as 'one-hot
    ## encoding').
+   ## Extra steps based on Vinicius Jacobs' sugestion...
+   step_center(all_numeric()) %>%
+   step_scale(all_numeric()) %>%
+   ## Extra steps based on Vinicius Jacobs' sugestion...
    step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) %>%
    step_zv(all_predictors())
 
@@ -382,8 +386,6 @@ knn_recipe <-
       formula = resposta ~ .,
       data = train_adult
    ) %>%
-   step_modeimpute(all_nominal(), -all_outcomes()) %>%
-   step_medianimpute(all_numeric(), -all_outcomes()) %>%
    ## For modeling, it is preferred to encode qualitative data as factors
    ## (instead of character).
    ## I have done this already...
@@ -409,7 +411,7 @@ randomforest_recipe <-
    recipe(
       formula = resposta ~ .,
       data = train_adult
-      ) %>%
+   ) %>%
    step_modeimpute(all_nominal(), -all_outcomes()) %>%
    step_medianimpute(all_numeric(), -all_outcomes()) %>%
    ## For modeling, it is preferred to encode qualitative data as factors
@@ -475,7 +477,7 @@ xgboost_spec <-
       sample_size = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost")
+   set_engine("xgboost", nthread = 8, verbose = TRUE)
 
 xgboost_spec
 
@@ -486,7 +488,7 @@ earth_spec <-
       mode = "classification",
       num_terms = tune(),
       prod_degree = tune(),
-      prune_method = "backward"
+      prune_method = tune()
    ) %>%
    set_mode("classification") %>%
    set_engine("earth")
@@ -498,14 +500,14 @@ earth_spec
 neural_spec <-
    mlp(
       mode = "classification",
-      hidden_units = seq(1, 10, 1),
-      penalty = seq(0, 1, 0.1),
-      # dropout = "none",
-      epochs = seq(10, 30, 2)
-      # activation = tune()
+      hidden_units = tune(),
+      penalty = tune(),
+      dropout = tune(),
+      epochs = tune(),
+      activation = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("nnet")
+   set_engine("keras")
 
 neural_spec
 
@@ -652,10 +654,7 @@ adult_resamples
 # 7.1 - Modelos Lineares Generalizados ------------------------------------
 glm_grid <-
    tidyr::crossing(
-      penalty = c(
-         10^seq(-6, -1, length.out = 20),
-         0.000000115, 0.00000217, 0.00078476, 0.000477
-      ),
+      penalty = c(10^seq(-6, -1, length.out = 20), 0.000000115, 0.00000217, 0.000477),
       mixture = c(0.05, 0.2, 0.4, 0.6, 0.8, 0.833, 0.918, 0.975, 1)
    )
 
@@ -687,7 +686,7 @@ logistic_tune <-
 # 7.2 - Arvore de Decisao -------------------------------------------------
 arvore_tune <-
    tune_grid(
-      object = arvore_workflow,
+      object = adult_ad_wf,
       resamples = adult_resamples,
       grid = 10,
       metrics = metric_set(roc_auc),
@@ -740,7 +739,7 @@ earth_tune <-
 # 7.5 - Multilayer Perceptron ---------------------------------------------
 neural_tune <-
    tune_grid(
-      object = neural_workflow,
+      object = adult_mp_wf,
       resamples = adult_resamples,
       grid = 10,
       metrics = metric_set(roc_auc),
@@ -782,9 +781,9 @@ randomforest_tune <-
 # 7.8 - Polynomial Support Vector Machines --------------------------------
 polysvm_tune <-
    tune_grid(
-      object = polysvm_workflow,
+      object = adult_ps_wf,
       resamples = adult_resamples,
-      grid = 4,
+      grid = 5,
       metrics = metric_set(roc_auc),
       control = control_grid(
          verbose = TRUE,
@@ -796,7 +795,7 @@ polysvm_tune <-
 # 7.9 - Radial Basis Function Support Vector Machines ---------------------
 radialsvm_tune <-
    tune_grid(
-      object = radialsvm_workflow,
+      object = adult_rs_wf,
       resamples = adult_resamples,
       grid = 4,
       metrics = metric_set(roc_auc),
@@ -850,7 +849,7 @@ glm_best_params <-
 
 logistic_best_params <-
    select_best(
-      x = logistic_tune,
+      x = logistica_tune,
       metric = "roc_auc"
    )
 
@@ -942,7 +941,7 @@ glm_workflow
 logistic_workflow <-
    logistic_workflow %>%
    finalize_workflow(logistic_best_params)
-logistic_workflow
+adult_rl_wf
 
 arvore_workflow <-
    arvore_workflow %>%
@@ -1059,16 +1058,16 @@ radialsvm_last_fit
 
 
 # 9.3 - Metricas de Desempenho --------------------------------------------
-collect_metrics(glm_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(logistic_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(arvore_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(xgboost_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(earth_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(neural_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(knn_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(randomforest_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(polysvm_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
-collect_metrics(radialsvm_last_fit) %>% arrange(desc(mean)) %>% print.data.frame()
+collect_metrics(glm_last_fit) %>% print.data.frame()
+collect_metrics(logistic_last_fit) %>% print.data.frame()
+collect_metrics(arvore_last_fit) %>% print.data.frame()
+collect_metrics(xgboost_last_fit) %>% print.data.frame()
+collect_metrics(earth_last_fit) %>% print.data.frame()
+collect_metrics(neural_last_fit) %>% print.data.frame()
+collect_metrics(knn_last_fit) %>% print.data.frame()
+collect_metrics(randomforest_last_fit) %>% print.data.frame()
+collect_metrics(polysvm_last_fit) %>% print.data.frame()
+collect_metrics(radialsvm_last_fit) %>% print.data.frame()
 
 
 glm_preds <- collect_predictions(glm_last_fit)
