@@ -702,7 +702,7 @@ xgboost_tune <-
    tune_grid(
       object = xgboost_workflow,
       resamples = adult_resamples,
-      grid = 100,
+      grid = 300,
       metrics = metric_set(roc_auc),
       control = control_grid(
          verbose = TRUE,
