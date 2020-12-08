@@ -292,7 +292,7 @@ tests_adult %>% glimpse()
 adult_resamples <-
    vfold_cv(
       train_adult,
-      v = 10,
+      v = 5,
       strata = resposta
    )
 adult_resamples
@@ -418,13 +418,19 @@ base_adult_round2 <- xgboost_workflow2 %>%
       control = control_grid(save_pred = TRUE, verbose = TRUE, allow_par = TRUE),
       metrics = metric_set(roc_auc)
    )
-grid_max_entropy()
+
 
 autoplot(base_adult_round2)
 base_adult_round2 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(base_adult_round2) %>% arrange(desc(mean)) %>% print.data.frame()
 base_adult_select_best_passo2 <- base_adult_round2 %>% select_best(metric = "roc_auc")
 base_adult_select_best_passo2
+
+
+
+grid_max_entropy()
+grid_latin_hypercube()
+
 
 
 # 6 - Workflows -----------------------------------------------------------
