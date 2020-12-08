@@ -357,8 +357,10 @@ xgboost_workflow1 <-
 
 
 testing_grid1 <- expand.grid(
-   learn_rate = seq(from = 0.001, to = 0.03, by = 0.001),
-   trees = c(250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
+   # learn_rate = seq(from = 0.001, to = 0.03, by = 0.001),
+   # trees = c(250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
+   learn_rate = seq(from = 0.022, to = 0.024, by = 0.001),
+   trees = c(2250, 2500, 2750, 3000)
 )
 testing_grid1
 
@@ -403,8 +405,8 @@ xgboost_workflow2 <-
 
 
 testing_grid2 <- expand.grid(
-   min_n = seq(from = 2, to = 7, by = 1),
-   tree_depth = seq(from = 3, to = 13, by = 1)
+   min_n = seq(from = 2, to = 6, by = 2),
+   tree_depth = seq(from = 3, to = 13, by = 2)
 )
 testing_grid2
 
@@ -416,7 +418,7 @@ base_adult_round2 <- xgboost_workflow2 %>%
       control = control_grid(save_pred = TRUE, verbose = TRUE, allow_par = TRUE),
       metrics = metric_set(roc_auc)
    )
-
+grid_max_entropy()
 
 autoplot(base_adult_round2)
 base_adult_round2 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
