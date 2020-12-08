@@ -403,8 +403,8 @@ xgboost_workflow2 <-
 
 
 testing_grid2 <- expand.grid(
-   min_n = seq(from = 2, to = 13, by = 1),
-   tree_depth = seq(from = 2, to = 13, by = 1)
+   min_n = seq(from = 2, to = 7, by = 1),
+   tree_depth = seq(from = 3, to = 13, by = 1)
 )
 testing_grid2
 
