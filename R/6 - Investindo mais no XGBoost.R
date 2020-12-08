@@ -28,6 +28,8 @@ Allocated_Memory <- paste(memory.size(), "Mb")
 
 # Para ordenar os valores, olharei a WOE, ou Weight of Evidence das variaveis nominais...
 
+questionr::freq.na(adult)
+
 IV0 <- adult %>%
    select(-id) %>%
    mutate(
@@ -266,7 +268,11 @@ table(adult2$workclass, adult2$resposta)
 table(adult2$race, adult2$resposta)
 
 
-# 3 - Bases de Treino e Validacao -----------------------------------------
+
+# 3 - Divisoes na Base ----------------------------------------------------
+
+
+# 3.1 - Bases de Treino e Validacao -----------------------------------------
 split <-
    initial_split(
       data = adult2,
@@ -280,6 +286,16 @@ tests_adult <- testing(split)
 
 train_adult %>% glimpse()
 tests_adult %>% glimpse()
+
+
+# 3.2 - Cross-Validation --------------------------------------------------
+adult_resamples <-
+   vfold_cv(
+      train_adult,
+      v = 10,
+      strata = resposta
+   )
+adult_resamples
 
 
 # 4 - Algumas Receitas no Capricho... -------------------------------------
@@ -317,22 +333,96 @@ xgboost_recipe
 # 5 - Definindo os Modelos ------------------------------------------------
 
 
-# 5.3 - Boost Tree - XGBoost ----------------------------------------------
-xgboost_spec <-
+# 5.1 - Melhores Hiperparametros para trees() e learn_rate() --------------
+xgboost_spec1 <-
    boost_tree(
       mode = "classification",
-      mtry = tune(),
+      mtry = 37,
       trees = tune(),
-      min_n = tune(),
-      tree_depth = tune(),
+      min_n = 4,
+      tree_depth = 3,
       learn_rate = tune(),
-      loss_reduction = tune(),
-      sample_size = tune()
+      loss_reduction = 0.00001766597,
+      sample_size = 0.7868248
    ) %>%
    set_mode("classification") %>%
    set_engine("xgboost", nthread = 8, verbose = TRUE)
+xgboost_spec1
 
-xgboost_spec
+
+xgboost_workflow1 <-
+   workflow() %>%
+   add_recipe(xgboost_recipe) %>%
+   add_model(xgboost_spec1)
+
+
+testing_grid1 <- expand.grid(
+   learn_rate = seq(from = 0.001, to = 0.03, by = 0.001),
+   trees = c(250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
+)
+testing_grid1
+
+
+base_adult_round1 <- xgboost_workflow1 %>%
+   tune_grid(
+      resamples = adult_resamples,
+      grid = testing_grid1,
+      control = control_grid(save_pred = TRUE, verbose = TRUE, allow_par = TRUE),
+      metrics = metric_set(roc_auc)
+   )
+
+
+autoplot(base_adult_round1)
+base_adult_round1 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
+collect_metrics(base_adult_round1) %>% arrange(desc(mean)) %>% print.data.frame()
+base_adult_select_best_passo1 <- base_adult_round1 %>% select_best(metric = "roc_auc")
+base_adult_select_best_passo1
+
+
+# 5.2 - Melhores Hiperparametros para min_n() e tree_depth() --------------
+xgboost_spec2 <-
+   boost_tree(
+      mode = "classification",
+      mtry = 37,
+      trees = base_adult_select_best_passo1$trees,
+      min_n = tune(),
+      tree_depth = tune(),
+      learn_rate = base_adult_select_best_passo1$learn_rate,
+      loss_reduction = 0.00001766597,
+      sample_size = 0.7868248
+   ) %>%
+   set_mode("classification") %>%
+   set_engine("xgboost", nthread = 8, verbose = TRUE)
+xgboost_spec2
+
+
+xgboost_workflow2 <-
+   workflow() %>%
+   add_recipe(xgboost_recipe) %>%
+   add_model(xgboost_spec2)
+
+
+testing_grid2 <- expand.grid(
+   min_n = seq(from = 2, to = 13, by = 1),
+   tree_depth = seq(from = 2, to = 13, by = 1)
+)
+testing_grid2
+
+
+base_adult_round2 <- xgboost_workflow2 %>%
+   tune_grid(
+      resamples = adult_resamples,
+      grid = testing_grid2,
+      control = control_grid(save_pred = TRUE, verbose = TRUE, allow_par = TRUE),
+      metrics = metric_set(roc_auc)
+   )
+
+
+autoplot(base_adult_round2)
+base_adult_round2 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
+collect_metrics(base_adult_round2) %>% arrange(desc(mean)) %>% print.data.frame()
+base_adult_select_best_passo2 <- base_adult_round2 %>% select_best(metric = "roc_auc")
+base_adult_select_best_passo2
 
 
 # 6 - Workflows -----------------------------------------------------------
@@ -346,16 +436,6 @@ xgboost_workflow <-
 
 
 # 7 - Tunagem de Hiperparametros ------------------------------------------
-
-
-# 7.0 - Cross-Validation --------------------------------------------------
-adult_resamples <-
-   vfold_cv(
-      train_adult,
-      v = 10,
-      strata = resposta
-   )
-adult_resamples
 
 
 # 7.3 - Boost Tree - XGBoost ----------------------------------------------
