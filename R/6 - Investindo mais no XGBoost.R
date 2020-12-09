@@ -494,8 +494,8 @@ xgboost_workflow4 <-
 
 
 testing_grid4 <- expand.grid(
-   mtry = seq(from = 5, to = 95, by = 10),
-   sample_size = seq(from = 0.5, to = 0.95, by = 0.05)
+   mtry = seq(from = 5, to = 45, by = 10),
+   sample_size = seq(from = 0.8, to = 1, by = 0.02)
 )
 testing_grid4
 
