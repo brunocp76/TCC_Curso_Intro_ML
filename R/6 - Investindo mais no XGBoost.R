@@ -268,40 +268,7 @@ table(adult2$workclass, adult2$resposta)
 table(adult2$race, adult2$resposta)
 
 
-
-# 3 - Divisoes na Base ----------------------------------------------------
-
-
-# 3.1 - Bases de Treino e Validacao -----------------------------------------
-split <-
-   initial_split(
-      data = adult2,
-      strata = resposta,
-      prop = 3/4
-   )
-split
-
-train_adult <- training(split)
-tests_adult <- testing(split)
-
-train_adult %>% glimpse()
-tests_adult %>% glimpse()
-
-
-# 3.2 - Cross-Validation --------------------------------------------------
-adult_resamples <-
-   vfold_cv(
-      train_adult,
-      v = 10,
-      strata = resposta
-   )
-adult_resamples
-
-
-# 4 - Algumas Receitas no Capricho... -------------------------------------
-
-
-# 4.3 - Boost Tree - XGBoost ----------------------------------------------
+# 3 - Sai uma Receita de XGBoost no Capricho... ---------------------------
 xgboost_recipe <-
    recipe(
       formula = resposta ~ .,
@@ -328,6 +295,35 @@ xgboost_recipe <-
    step_zv(all_predictors())
 
 xgboost_recipe
+
+
+# 4 - Divisoes na Base ----------------------------------------------------
+
+
+# 4.1 - Bases de Treino e Validacao -----------------------------------------
+split <-
+   initial_split(
+      data = adult2,
+      strata = resposta,
+      prop = 3/4
+   )
+split
+
+train_adult <- training(split)
+tests_adult <- testing(split)
+
+train_adult %>% glimpse()
+tests_adult %>% glimpse()
+
+
+# 4.2 - Cross-Validation --------------------------------------------------
+adult_resamples <-
+   vfold_cv(
+      train_adult,
+      v = 3,
+      strata = resposta
+   )
+adult_resamples
 
 
 # 5 - Melhores Hiperparametros --------------------------------------------
@@ -357,8 +353,8 @@ xgboost_workflow1 <-
 
 
 testing_grid1 <- expand.grid(
-   learn_rate = seq(from = 0.01, to = 0.035, by = 0.001),
-   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
+   learn_rate = seq(from = 0.02, to = 0.035, by = 0.001),
+   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750)
 )
 testing_grid1
 
@@ -494,8 +490,8 @@ xgboost_workflow4 <-
 
 
 testing_grid4 <- expand.grid(
-   mtry = seq(from = 5, to = 45, by = 10),
-   sample_size = seq(from = 0.8, to = 1, by = 0.02)
+   mtry = seq(from = 5, to = 45, by = 5),
+   sample_size = seq(from = 0.7, to = 1, by = 0.02)
 )
 testing_grid4
 
@@ -540,8 +536,8 @@ xgboost_workflow5 <-
 
 
 testing_grid5 <- expand.grid(
-   learn_rate = seq(from = 0.02, to = 0.035, by = 0.001),
-   trees = c(1750, 2000, 2250, 2500, 2750, 3000),
+   learn_rate = seq(from = 0.015, to = 0.035, by = 0.001),
+   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000),
    lambda = c(0, 0.1, 0.12, 0.15, 0.17)
 )
 testing_grid5
