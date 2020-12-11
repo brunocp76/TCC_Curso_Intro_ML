@@ -301,16 +301,16 @@ xgboost_recipe
 
 
 # 4.1 - Bases de Treino e Validacao -----------------------------------------
-split <-
+split <- adult2 %>%
+   mutate(chave = str_c(resposta, '_', marital_status, '_', relationship)) %>%
    initial_split(
-      data = adult2,
-      strata = resposta,
+      strata = chave,
       prop = 3/4
    )
 split
 
-train_adult <- training(split)
-tests_adult <- testing(split)
+train_adult <- training(split) %>% select(-chave)
+tests_adult <- testing(split) %>% select(-chave)
 
 train_adult %>% glimpse()
 tests_adult %>% glimpse()
@@ -320,7 +320,7 @@ tests_adult %>% glimpse()
 adult_resamples <-
    vfold_cv(
       train_adult,
-      v = 3,
+      v = 10,
       strata = resposta
    )
 adult_resamples
@@ -353,7 +353,7 @@ xgboost_workflow1 <-
 
 
 testing_grid1 <- expand.grid(
-   learn_rate = seq(from = 0.02, to = 0.035, by = 0.001),
+   learn_rate = seq(from = 0.015, to = 0.035, by = 0.001),
    trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750)
 )
 testing_grid1

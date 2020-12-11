@@ -267,16 +267,16 @@ table(adult2$race, adult2$resposta)
 
 
 # 3 - Bases de Treino e Validacao -----------------------------------------
-split <-
+split <- adult2 %>%
+   mutate(chave = str_c(resposta, '_', marital_status, '_', relationship)) %>%
    initial_split(
-      data = adult2,
-      strata = resposta,
+      strata = chave,
       prop = 3/4
    )
 split
 
-train_adult <- training(split)
-tests_adult <- testing(split)
+train_adult <- training(split) %>% select(-chave)
+tests_adult <- testing(split) %>% select(-chave)
 
 train_adult %>% glimpse()
 tests_adult %>% glimpse()
