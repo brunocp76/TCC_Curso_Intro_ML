@@ -424,7 +424,7 @@ best_round1
 best_round2
 
 
-# 5.3 - loss_reduction() --------------------------------------------------
+# 5.3 - loss_reduction() e lambda() ---------------------------------------
 xgboost_spec3 <-
    boost_tree(
       mode = "classification",
@@ -437,7 +437,7 @@ xgboost_spec3 <-
       sample_size = 1
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = tune("lambda"), nthread = 8, verbose = TRUE)
 xgboost_spec3
 
 
@@ -448,7 +448,8 @@ xgboost_workflow3 <-
 
 
 testing_grid3 <- expand.grid(
-   loss_reduction = c(1e-5, 0.00001766597, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, seq(0.15, 0.34, length.out = 40)),
+   loss_reduction = c(1e-5, 0.00001766597, seq(5e-5, 0.35, length.out = 20)),
+   lambda = c(0, 0.1, 0.12, 0.15, 0.17)
 )
 testing_grid3
 
@@ -484,7 +485,7 @@ xgboost_spec4 <-
       sample_size = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = best_round3$lambda, nthread = 8, verbose = TRUE)
 xgboost_spec4
 
 
@@ -533,7 +534,7 @@ xgboost_spec5 <-
       sample_size = best_round4$sample_size
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = tune("lambda"), nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = best_round3$lambda, nthread = 8, verbose = TRUE)
 xgboost_spec5
 
 
@@ -559,8 +560,7 @@ tuning_round1 %>%
 
 testing_grid5 <- expand.grid(
    learn_rate = seq(from = 0.01, to = 0.04, by = 0.001),
-   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000),
-   lambda = c(0, 0.1, 0.12, 0.15, 0.17)
+   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
 )
 testing_grid5
 
@@ -585,141 +585,160 @@ best_round4
 best_round5
 
 
-# 5.2 - min_n() e tree_depth() --------------------------------------------
-xgboost_spec2 <-
+# 5.6 - min_n() e tree_depth() --------------------------------------------
+xgboost_spec6 <-
    boost_tree(
       mode = "classification",
-      mtry = 37,
-      trees = best_round1$trees,
+      mtry = best_round4$mtry,
+      trees = best_round5$trees,
       min_n = tune(),
       tree_depth = tune(),
-      learn_rate = best_round1$learn_rate,
-      loss_reduction = 0.00001766597,
-      sample_size = 1
+      learn_rate = best_round5$learn_rate,
+      loss_reduction = best_round3$loss_reduction,
+      sample_size = best_round4$sample_size
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", nthread = 8, verbose = TRUE)
-xgboost_spec2
+   set_engine("xgboost", lambda = best_round3$lambda, nthread = 8, verbose = TRUE)
+xgboost_spec6
 
 
-xgboost_workflow2 <-
+xgboost_workflow6 <-
    workflow() %>%
    add_recipe(xgboost_recipe) %>%
-   add_model(xgboost_spec2)
+   add_model(xgboost_spec6)
 
 
-testing_grid2 <- expand.grid(
+testing_grid6 <- expand.grid(
    min_n = seq(from = 2, to = 7, by = 1),
    tree_depth = seq(from = 2, to = 12, by = 1)
 )
-testing_grid2
+testing_grid6
 
 
-tuning_round2 <- xgboost_workflow2 %>%
+tuning_round6 <- xgboost_workflow6 %>%
    tune_grid(
       resamples = adult_resamples,
-      grid = testing_grid2,
+      grid = testing_grid6,
       control = control_grid(save_pred = TRUE, verbose = TRUE, allow_par = TRUE),
       metrics = metric_set(roc_auc)
    )
 
 
-autoplot(tuning_round2)
-tuning_round2 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
-collect_metrics(tuning_round2) %>% arrange(desc(mean)) %>% print.data.frame()
-best_round2 <- tuning_round2 %>% select_best(metric = "roc_auc")
+autoplot(tuning_round6)
+tuning_round6 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
+collect_metrics(tuning_round6) %>% arrange(desc(mean)) %>% print.data.frame()
+best_round6 <- tuning_round6 %>% select_best(metric = "roc_auc")
+best_round1
 best_round2
+best_round3
+best_round4
+best_round5
+best_round6
 
 
-# 5.3 - loss_reduction() --------------------------------------------------
-xgboost_spec3 <-
+# 5.7 - loss_reduction() e lambda() ---------------------------------------
+xgboost_spec7 <-
    boost_tree(
       mode = "classification",
-      mtry = 37,
-      trees = best_round1$trees,
-      min_n = best_round2$min_n,
-      tree_depth = best_round2$tree_depth,
-      learn_rate = best_round1$learn_rate,
+      mtry = best_round4$mtry,
+      trees = best_round5$trees,
+      min_n = best_round6$min_n,
+      tree_depth = best_round6$tree_depth,
+      learn_rate = best_round5$learn_rate,
       loss_reduction = tune(),
-      sample_size = 1
+      sample_size = best_round4$sample_size
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", nthread = 8, verbose = TRUE)
-xgboost_spec3
+   set_engine("xgboost", lambda = tune("lambda"), nthread = 8, verbose = TRUE)
+xgboost_spec7
 
 
-xgboost_workflow3 <-
+xgboost_workflow7 <-
    workflow() %>%
    add_recipe(xgboost_recipe) %>%
-   add_model(xgboost_spec3)
+   add_model(xgboost_spec7)
 
 
-testing_grid3 <- expand.grid(
-   loss_reduction = c(1e-5, 1e-4, 1e-3, 1e-2, 1e-1, seq(0.15, 0.34, length.out = 20))
+testing_grid7 <- expand.grid(
+   loss_reduction = c(1e-5, 0.00001766597, seq(5e-5, 0.35, length.out = 20)),
+   lambda = c(0, 0.1, 0.12, 0.15, 0.17)
 )
-testing_grid3
+testing_grid7
 
 
-tuning_round3 <- xgboost_workflow3 %>%
+tuning_round7 <- xgboost_workflow7 %>%
    tune_grid(
       resamples = adult_resamples,
-      grid = testing_grid3,
+      grid = testing_grid7,
       control = control_grid(save_pred = TRUE, verbose = TRUE, allow_par = TRUE),
       metrics = metric_set(roc_auc)
    )
 
 
-autoplot(tuning_round3)
-tuning_round3 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
-collect_metrics(tuning_round3) %>% arrange(desc(mean)) %>% print.data.frame()
-best_round3 <- tuning_round3 %>% select_best(metric = "roc_auc")
+autoplot(tuning_round7)
+tuning_round7 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
+collect_metrics(tuning_round7) %>% arrange(desc(mean)) %>% print.data.frame()
+best_round7 <- tuning_round7 %>% select_best(metric = "roc_auc")
+best_round1
+best_round2
 best_round3
+best_round4
+best_round5
+best_round6
+best_round7
 
 
-# 5.4 - mtry() e sample_size() --------------------------------------------
-xgboost_spec4 <-
+# 5.8 - mtry() e sample_size() --------------------------------------------
+xgboost_spec8 <-
    boost_tree(
       mode = "classification",
       mtry = tune(),
-      trees = best_round1$trees,
-      min_n = best_round2$min_n,
-      tree_depth = best_round2$tree_depth,
-      learn_rate = best_round1$learn_rate,
-      loss_reduction = best_round3$loss_reduction,
+      trees = best_round5$trees,
+      min_n = best_round6$min_n,
+      tree_depth = best_round6$tree_depth,
+      learn_rate = best_round5$learn_rate,
+      loss_reduction = best_round7$loss_reduction,
       sample_size = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", nthread = 8, verbose = TRUE)
-xgboost_spec4
+   set_engine("xgboost", lambda = best_round7$lambda, nthread = 8, verbose = TRUE)
+xgboost_spec8
 
 
-xgboost_workflow4 <-
+xgboost_workflow8 <-
    workflow() %>%
    add_recipe(xgboost_recipe) %>%
-   add_model(xgboost_spec4)
+   add_model(xgboost_spec8)
 
 
-testing_grid4 <- expand.grid(
-   mtry = seq(from = 5, to = 95, by = 10),
-   sample_size = seq(from = 0.5, to = 0.95, by = 0.05)
+testing_grid8 <- expand.grid(
+   mtry = seq(from = 5, to = 45, by = 5),
+   sample_size = seq(from = 0.6, to = 1, by = 0.02)
 )
-testing_grid4
+testing_grid8
 
 
-tuning_round4 <- xgboost_workflow4 %>%
+tuning_round8 <- xgboost_workflow8 %>%
    tune_grid(
       resamples = adult_resamples,
-      grid = testing_grid4,
+      grid = testing_grid8,
       control = control_grid(save_pred = TRUE, verbose = TRUE, allow_par = TRUE),
       metrics = metric_set(roc_auc)
    )
 
 
-autoplot(tuning_round4)
-tuning_round4 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
-collect_metrics(tuning_round4) %>% arrange(desc(mean)) %>% print.data.frame()
-best_round4 <- tuning_round4 %>% select_best(metric = "roc_auc")
+autoplot(tuning_round8)
+tuning_round8 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
+collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% print.data.frame()
+best_round8 <- tuning_round8 %>% select_best(metric = "roc_auc")
+best_round1
+best_round2
+best_round3
 best_round4
+best_round5
+best_round6
+best_round7
+best_round8
 
 
 
@@ -728,39 +747,11 @@ grid_latin_hypercube()
 
 
 
-# 6 - Workflows -----------------------------------------------------------
-
-
-# 6.3 - Boost Tree - XGBoost ----------------------------------------------
-xgboost_workflow <-
-   workflow() %>%
-   add_recipe(xgboost_recipe) %>%
-   add_model(xgboost_spec)
-
-
-# 7 - Tunagem de Hiperparametros ------------------------------------------
-
-
-# 7.3 - Boost Tree - XGBoost ----------------------------------------------
-xgboost_tune <-
-   tune_grid(
-      object = xgboost_workflow,
-      resamples = adult_resamples,
-      grid = 300,
-      metrics = metric_set(roc_auc),
-      control = control_grid(
-         verbose = TRUE,
-         allow_par = TRUE
-      )
-   )
-
-
-# 8 - Modelos Finais e Submissao ------------------------------------------
+# 6 - Olhando as Metricas de Desempenho -----------------------------------
 graphics.off()
 
 
-# 8.0 - Olhando as Metricas de Desempenho ---------------------------------
-collect_metrics(xgboost_tune) %>% arrange(desc(mean)) %>% print.data.frame()
+collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% print.data.frame()
 
 
 # collect_metrics(adult_rl_tune_grid) %>%
@@ -783,7 +774,7 @@ Allocated_Memory <- paste(memory.size(), "Mb")
 # 8.3 - Boost Tree - XGBoost ----------------------------------------------
 xgboost_best_params <-
    select_best(
-      x = xgboost_tune,
+      x = tuning_round8,
       metric = "roc_auc"
    )
 xgboost_best_params
@@ -794,7 +785,7 @@ xgboost_best_params
 
 # 9.1 - Workflows de Finalizacao dos Modelos  -----------------------------
 xgboost_workflow <-
-   xgboost_workflow %>%
+   xgboost_workflow8 %>%
    finalize_workflow(xgboost_best_params)
 xgboost_workflow
 
