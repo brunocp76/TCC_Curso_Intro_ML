@@ -338,11 +338,8 @@ xgboost_spec1 <-
       mtry = 37,
       trees = tune(),
       min_n = 2,
-<<<<<<< HEAD
       tree_depth = 3,
-=======
       tree_depth = 4,
->>>>>>> 22e5ca09ff6b2037fbe694bdd8dd26e02d739d20
       learn_rate = tune(),
       loss_reduction = 0.00001766597,
       sample_size = 1
