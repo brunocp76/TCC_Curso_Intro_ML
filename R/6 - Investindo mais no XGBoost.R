@@ -449,11 +449,8 @@ xgboost_workflow3 <-
 
 
 testing_grid3 <- expand.grid(
-<<<<<<< HEAD
-   loss_reduction = c(0.00001766597, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, seq(0.15, 0.34, length.out = 40))
-=======
+   loss_reduction = c(0.00001766597, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, seq(0.15, 0.34, length.out = 40)),
    loss_reduction = c(1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, seq(0.15, 0.34, length.out = 20))
->>>>>>> 22e5ca09ff6b2037fbe694bdd8dd26e02d739d20
 )
 testing_grid3
 
@@ -646,7 +643,7 @@ xgboost_spec3 <-
       tree_depth = best_round2$tree_depth,
       learn_rate = best_round1$learn_rate,
       loss_reduction = tune(),
-      sample_size = 0.7868248
+      sample_size = 1
    ) %>%
    set_mode("classification") %>%
    set_engine("xgboost", nthread = 8, verbose = TRUE)
