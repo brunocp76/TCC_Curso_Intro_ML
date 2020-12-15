@@ -1,4 +1,6 @@
 # 0 - Macro e Bibliotecas -------------------------------------------------
+Allocated_Memory <- paste(memory.size(), "Mb")
+
 cls <- function() cat("\f")
 
 library(vip)
@@ -268,7 +270,36 @@ table(adult2$workclass, adult2$resposta)
 table(adult2$race, adult2$resposta)
 
 
-# 3 - Sai uma Receita de XGBoost no Capricho... ---------------------------
+# 3 - Divisoes na Base ----------------------------------------------------
+
+
+# 3.1 - Bases de Treino e Validacao -----------------------------------------
+split <- adult2 %>%
+   mutate(chave = str_c(resposta, '_', marital_status, '_', relationship)) %>%
+   initial_split(
+      strata = chave,
+      prop = 3/4
+   )
+split
+
+train_adult <- training(split) %>% select(-chave)
+tests_adult <- testing(split) %>% select(-chave)
+
+train_adult %>% glimpse()
+tests_adult %>% glimpse()
+
+
+# 3.2 - Cross-Validation --------------------------------------------------
+adult_resamples <-
+   vfold_cv(
+      train_adult,
+      v = 10,
+      strata = resposta
+   )
+adult_resamples
+
+
+# 4 - Sai uma Receita de XGBoost no Capricho... ---------------------------
 xgboost_recipe <-
    recipe(
       formula = resposta ~ .,
@@ -297,35 +328,6 @@ xgboost_recipe <-
 xgboost_recipe
 
 
-# 4 - Divisoes na Base ----------------------------------------------------
-
-
-# 4.1 - Bases de Treino e Validacao -----------------------------------------
-split <- adult2 %>%
-   mutate(chave = str_c(resposta, '_', marital_status, '_', relationship)) %>%
-   initial_split(
-      strata = chave,
-      prop = 3/4
-   )
-split
-
-train_adult <- training(split) %>% select(-chave)
-tests_adult <- testing(split) %>% select(-chave)
-
-train_adult %>% glimpse()
-tests_adult %>% glimpse()
-
-
-# 4.2 - Cross-Validation --------------------------------------------------
-adult_resamples <-
-   vfold_cv(
-      train_adult,
-      v = 10,
-      strata = resposta
-   )
-adult_resamples
-
-
 # 5 - Melhores Hiperparametros --------------------------------------------
 
 
@@ -335,11 +337,11 @@ xgboost_spec1 <-
       mode = "classification",
       mtry = 37,
       trees = tune(),
-      min_n = 4,
+      min_n = 2,
       tree_depth = 3,
       learn_rate = tune(),
       loss_reduction = 0.00001766597,
-      sample_size = 0.7868248
+      sample_size = 1
    ) %>%
    set_mode("classification") %>%
    set_engine("xgboost", nthread = 8, verbose = TRUE)
@@ -353,8 +355,8 @@ xgboost_workflow1 <-
 
 
 testing_grid1 <- expand.grid(
-   learn_rate = seq(from = 0.015, to = 0.035, by = 0.001),
-   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750)
+   learn_rate = seq(from = 0.01, to = 0.04, by = 0.001),
+   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
 )
 testing_grid1
 
@@ -385,7 +387,7 @@ xgboost_spec2 <-
       tree_depth = tune(),
       learn_rate = best_round1$learn_rate,
       loss_reduction = 0.00001766597,
-      sample_size = 0.7868248
+      sample_size = 1
    ) %>%
    set_mode("classification") %>%
    set_engine("xgboost", nthread = 8, verbose = TRUE)
@@ -399,7 +401,7 @@ xgboost_workflow2 <-
 
 
 testing_grid2 <- expand.grid(
-   min_n = seq(from = 2, to = 7, by = 1),
+   min_n = seq(from = 2, to = 9, by = 1),
    tree_depth = seq(from = 2, to = 12, by = 1)
 )
 testing_grid2
@@ -418,6 +420,7 @@ autoplot(tuning_round2)
 tuning_round2 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round2) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round2 <- tuning_round2 %>% select_best(metric = "roc_auc")
+best_round1
 best_round2
 
 
@@ -445,7 +448,7 @@ xgboost_workflow3 <-
 
 
 testing_grid3 <- expand.grid(
-   loss_reduction = c(1e-5, 1e-4, 1e-3, 1e-2, 1e-1, seq(0.15, 0.34, length.out = 20))
+   loss_reduction = c(0.00001766597, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, seq(0.15, 0.34, length.out = 40))
 )
 testing_grid3
 
@@ -463,6 +466,8 @@ autoplot(tuning_round3)
 tuning_round3 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round3) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round3 <- tuning_round3 %>% select_best(metric = "roc_auc")
+best_round1
+best_round2
 best_round3
 
 
@@ -491,7 +496,7 @@ xgboost_workflow4 <-
 
 testing_grid4 <- expand.grid(
    mtry = seq(from = 5, to = 45, by = 5),
-   sample_size = seq(from = 0.7, to = 1, by = 0.02)
+   sample_size = seq(from = 0.6, to = 1, by = 0.02)
 )
 testing_grid4
 
@@ -509,6 +514,9 @@ autoplot(tuning_round4)
 tuning_round4 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round4) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round4 <- tuning_round4 %>% select_best(metric = "roc_auc")
+best_round1
+best_round2
+best_round3
 best_round4
 
 
@@ -536,7 +544,7 @@ xgboost_workflow5 <-
 
 
 testing_grid5 <- expand.grid(
-   learn_rate = seq(from = 0.015, to = 0.035, by = 0.001),
+   learn_rate = seq(from = 0.01, to = 0.04, by = 0.001),
    trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000),
    lambda = c(0, 0.1, 0.12, 0.15, 0.17)
 )
@@ -556,6 +564,10 @@ autoplot(tuning_round5)
 tuning_round5 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round5) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round5 <- tuning_round5 %>% select_best(metric = "roc_auc")
+best_round1
+best_round2
+best_round3
+best_round4
 best_round5
 
 
@@ -569,7 +581,7 @@ xgboost_spec2 <-
       tree_depth = tune(),
       learn_rate = best_round1$learn_rate,
       loss_reduction = 0.00001766597,
-      sample_size = 0.7868248
+      sample_size = 1
    ) %>%
    set_mode("classification") %>%
    set_engine("xgboost", nthread = 8, verbose = TRUE)
