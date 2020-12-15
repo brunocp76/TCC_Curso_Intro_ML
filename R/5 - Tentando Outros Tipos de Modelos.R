@@ -1,4 +1,6 @@
 # 0 - Macro e Bibliotecas -------------------------------------------------
+Allocated_Memory <- paste(memory.size(), "Mb")
+
 cls <- function() cat("\f")
 
 library(vip)

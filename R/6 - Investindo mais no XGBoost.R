@@ -338,7 +338,11 @@ xgboost_spec1 <-
       mtry = 37,
       trees = tune(),
       min_n = 2,
+<<<<<<< HEAD
       tree_depth = 3,
+=======
+      tree_depth = 4,
+>>>>>>> 22e5ca09ff6b2037fbe694bdd8dd26e02d739d20
       learn_rate = tune(),
       loss_reduction = 0.00001766597,
       sample_size = 1
@@ -448,7 +452,11 @@ xgboost_workflow3 <-
 
 
 testing_grid3 <- expand.grid(
+<<<<<<< HEAD
    loss_reduction = c(0.00001766597, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, seq(0.15, 0.34, length.out = 40))
+=======
+   loss_reduction = c(1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1, seq(0.15, 0.34, length.out = 20))
+>>>>>>> 22e5ca09ff6b2037fbe694bdd8dd26e02d739d20
 )
 testing_grid3
 
@@ -541,6 +549,20 @@ xgboost_workflow5 <-
    workflow() %>%
    add_recipe(xgboost_recipe) %>%
    add_model(xgboost_spec5)
+
+
+
+tuning_round1 %>%
+   show_best(metric = "roc_auc", n = 2) %>%
+   select(trees, learn_rate) %>%
+   summarise(
+      minimo_trees = (tuning_round1 %>% show_best(metric = "roc_auc"))[1, 1]
+         - 1 * sd((tuning_round1 %>% show_best(metric = "roc_auc"))[, 1]),
+      maximo_trees = (tuning_round1 %>% show_best(metric = "roc_auc"))[1, 1]
+         + 1 * sd((tuning_round1 %>% show_best(metric = "roc_auc"))[, 1]),
+      minimo_learn_rate = (tuning_round1 %>% show_best(metric = "roc_auc"))[1, 2] - 1 * sd((tuning_round1 %>% show_best(metric = "roc_auc"))[, 2]),
+      maximo_learn_rate = (tuning_round1 %>% show_best(metric = "roc_auc"))[1, 2] + 1 * sd((tuning_round1 %>% show_best(metric = "roc_auc"))[, 2])
+   )
 
 
 testing_grid5 <- expand.grid(
