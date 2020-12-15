@@ -335,7 +335,7 @@ xgboost_recipe
 xgboost_spec1 <-
    boost_tree(
       mode = "classification",
-      mtry = 37,
+      mtry = 25,
       trees = tune(),
       min_n = 2,
       tree_depth = 3,
@@ -381,7 +381,7 @@ best_round1
 xgboost_spec2 <-
    boost_tree(
       mode = "classification",
-      mtry = 37,
+      mtry = 25,
       trees = best_round1$trees,
       min_n = tune(),
       tree_depth = tune(),
@@ -428,7 +428,7 @@ best_round2
 xgboost_spec3 <-
    boost_tree(
       mode = "classification",
-      mtry = 37,
+      mtry = 25,
       trees = best_round1$trees,
       min_n = best_round2$min_n,
       tree_depth = best_round2$tree_depth,
