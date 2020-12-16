@@ -370,7 +370,7 @@ tuning_round1 <- xgboost_workflow1 %>%
    )
 
 
-autoplot(tuning_round1)
+autoplot(tuning_round1) + ggtitle("Round 1 - trees() e learn_rate()")
 tuning_round1 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round1 <- tuning_round1 %>% select_best(metric = "roc_auc")
@@ -416,7 +416,7 @@ tuning_round2 <- xgboost_workflow2 %>%
    )
 
 
-autoplot(tuning_round2)
+autoplot(tuning_round2) + ggtitle("Round 2 - min_n() e tree_depth()")
 tuning_round2 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round2) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round2 <- tuning_round2 %>% select_best(metric = "roc_auc")
@@ -463,7 +463,7 @@ tuning_round3 <- xgboost_workflow3 %>%
    )
 
 
-autoplot(tuning_round3)
+autoplot(tuning_round3) + ggtitle("Round 3 - loss_reduction() e lambda()")
 tuning_round3 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round3) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round3 <- tuning_round3 %>% select_best(metric = "roc_auc")
@@ -511,7 +511,7 @@ tuning_round4 <- xgboost_workflow4 %>%
    )
 
 
-autoplot(tuning_round4)
+autoplot(tuning_round4) + ggtitle("Round 4 - mtry() e sample_size()")
 tuning_round4 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round4) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round4 <- tuning_round4 %>% select_best(metric = "roc_auc")
@@ -574,7 +574,7 @@ tuning_round5 <- xgboost_workflow5 %>%
    )
 
 
-autoplot(tuning_round5)
+autoplot(tuning_round5) + ggtitle("Round 5 - trees() e learn_rate()")
 tuning_round5 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round5) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round5 <- tuning_round5 %>% select_best(metric = "roc_auc")
@@ -624,7 +624,7 @@ tuning_round6 <- xgboost_workflow6 %>%
    )
 
 
-autoplot(tuning_round6)
+autoplot(tuning_round6) + ggtitle("Round 6 - min_n() e tree_depth()")
 tuning_round6 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round6) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round6 <- tuning_round6 %>% select_best(metric = "roc_auc")
@@ -675,7 +675,7 @@ tuning_round7 <- xgboost_workflow7 %>%
    )
 
 
-autoplot(tuning_round7)
+autoplot(tuning_round7) + ggtitle("Round 7 - loss_reduction() e lambda()")
 tuning_round7 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round7) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round7 <- tuning_round7 %>% select_best(metric = "roc_auc")
@@ -727,7 +727,7 @@ tuning_round8 <- xgboost_workflow8 %>%
    )
 
 
-autoplot(tuning_round8)
+autoplot(tuning_round8) + ggtitle("Round 8 - mtry() e sample_size()")
 tuning_round8 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round8 <- tuning_round8 %>% select_best(metric = "roc_auc")
@@ -771,7 +771,10 @@ collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% print.data.frame()
 Allocated_Memory <- paste(memory.size(), "Mb")
 
 
-# 8.3 - Boost Tree - XGBoost ----------------------------------------------
+# 7 - Finalizando ---------------------------------------------------------
+
+
+# 7.1 - Melhores Parametros de Desempenho ---------------------------------
 xgboost_best_params <-
    select_best(
       x = tuning_round8,
@@ -780,17 +783,14 @@ xgboost_best_params <-
 xgboost_best_params
 
 
-# 9 - Finalizando... ------------------------------------------------------
-
-
-# 9.1 - Workflows de Finalizacao dos Modelos  -----------------------------
+# 7.2 - Workflows de Finalizacao ------------------------------------------
 xgboost_workflow <-
    xgboost_workflow8 %>%
    finalize_workflow(xgboost_best_params)
 xgboost_workflow
 
 
-# 9.2 - Aplicando os Melhores Modelos -------------------------------------
+# 7.3 - Aplicando o Ultimo Modelo -----------------------------------------
 xgboost_last_fit <-
    last_fit(
       object = xgboost_workflow,
@@ -799,8 +799,10 @@ xgboost_last_fit <-
 xgboost_last_fit
 
 
+# 8 - Finalizando... ------------------------------------------------------
 
-# 9.3 - Metricas de Desempenho --------------------------------------------
+
+# 8.1 - Metricas de Desempenho --------------------------------------------
 collect_metrics(xgboost_last_fit) %>% print.data.frame()
 
 
@@ -808,19 +810,19 @@ xgboost_preds <- collect_predictions(xgboost_last_fit)
 xgboost_preds
 
 
-# 9.4 - ROC para os Modelos -----------------------------------------------
+# 8.2 - ROC para os Modelos -----------------------------------------------
 xgboost_roc <- xgboost_preds %>%
    roc_curve(resposta, `.pred_<=50K`)
-autoplot(xgboost_roc)
+autoplot(xgboost_roc) + ggtitle("Curva ROC")
 
 
-# 9.5 - Importancia de Variaveis nos Modelos ------------------------------
+# 8.3 - Importancia de Variaveis ------------------------------------------
 xgboost_last_fit_model <- xgboost_last_fit$.workflow[[1]]$fit$fit
 xgboost_last_fit_model
 vip(xgboost_last_fit_model)
 
 
-# 9.6 - Matrizes de Confusao ----------------------------------------------
+# 8.4 - Matrizes de Confusao ----------------------------------------------
 xgboost_preds %>%
    mutate(
       resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
@@ -828,7 +830,7 @@ xgboost_preds %>%
    conf_mat(resposta, resposta_class)
 
 
-# 9.7 - Finalmente Modelos Finais -----------------------------------------
+# 8.5 - Base para o Kaggle ------------------------------------------------
 xgboost_final <- xgboost_workflow %>% fit(adult2)
 
 adult_val_submissao <- adult_val %>%
@@ -852,7 +854,7 @@ write_csv(
 dim(adult_val_submissao)
 
 
-# 9.8 - Limpando os Arquivos Temporarios ----------------------------------
+# 9 - Limpando os Temporarios ---------------------------------------------
 graphics.off()
 cls()
 Allocated_Memory <- paste(memory.size(), "Mb")
