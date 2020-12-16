@@ -356,7 +356,7 @@ xgboost_workflow1 <-
 
 testing_grid1 <- expand.grid(
    learn_rate = seq(from = 0.01, to = 0.045, by = 0.001),
-   trees = c(500, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
+   trees = c(1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000)
 )
 testing_grid1
 
