@@ -6,8 +6,15 @@ cls <- function() cat("\f")
 library(vip)
 library(tidyverse)
 library(tidymodels)
+library(doParallel)
+
+# Parallel Processing
+all_cores <- parallel::detectCores(logical = TRUE)
+registerDoParallel(cores = all_cores)
 
 Allocated_Memory <- paste(memory.size(), "Mb")
+
+
 
 
 # 1 - Importar as Bases ---------------------------------------------------
@@ -29,6 +36,8 @@ Allocated_Memory <- paste(memory.size(), "Mb")
 # 2 - Convertendo Variaveis Categoricas em Fatores ------------------------
 
 # Para ordenar os valores, olharei a WOE, ou Weight of Evidence das variaveis nominais...
+
+questionr::freq.na(adult)
 
 IV0 <- adult %>%
    select(-id) %>%
@@ -424,6 +433,113 @@ randomforest_recipe <-
    step_zv(all_predictors())
 
 randomforest_recipe
+
+
+# X - Experimentando tecnicas novas... ------------------------------------
+
+
+# X.1 - Logistic regression -----------------------------------------------
+
+
+# Logistic Regresssion Specification
+logit_tune_spec <- logistic_reg(
+   mode = "classification",
+   penalty = tune(),
+   mixture = tune()
+) %>%
+   set_mode("classification") %>%
+   set_engine("glmnet")
+
+# Hyperparameter grid
+logit_grid <- logit_tune_spec %>%
+   parameters() %>%
+   grid_max_entropy(size = 10)
+
+# Workflow bundling every step
+logit_wflow <- workflow() %>%
+   add_recipe(glm_recipe) %>%
+   add_model(logit_tune_spec)
+
+
+# X.7 - Random Forest -----------------------------------------------------
+
+
+# Random Forest Specification
+rf_tune_spec <- rand_forest(
+   mode = "classification",
+   mtry = tune(),
+   min_n = tune(),
+   trees = tune()
+) %>%
+   set_mode("classification") %>%
+   set_engine("ranger")
+
+rf_grid <- rf_tune_spec %>%
+   parameters() %>%
+   finalize(adult2) %>%
+   grid_max_entropy(size = 10)
+
+rf_wflow <- workflow() %>%
+   add_recipe(randomforest_recipe) %>%
+   add_model(rf_tune_spec)
+
+
+# mars model
+mars_tune_spec <- mars(
+   mode = "classification",
+   num_terms = tune(),
+   prod_degree = tune(),
+   prune_method = tune()
+) %>%
+   set_mode("classification") %>%
+   set_engine("earth")
+
+mars_grid <- mars_tune_spec %>%
+   parameters() %>%
+   grid_max_entropy(size = 10)
+
+mars_wflow <- workflow() %>%
+   add_recipe(preprocess) %>%
+   add_model(mars_tune_spec)
+
+
+#boosted trees
+boost_tune_spec <- boost_tree(
+   mode = "classification",
+   mtry = tune(),
+   tree = tune(),
+   learn_rate = tune(),
+   tree_depth = tune()
+   ) %>%
+   set_mode("classification") %>%
+   set_engine("xgboost")
+
+boost_grid <- boost_tune_spec %>%
+   parameters() %>%
+   finalize(adult2) %>%
+   grid_max_entropy(size = 10)
+
+boost_wflow <- workflow() %>%
+   add_recipe(xgboost_recipe) %>%
+   add_model(boost_tune_spec)
+
+
+#neural nets
+keras_tune_spec <- mlp(
+   hidden_units = tune(),
+   penalty = tune(),
+   activation = "relu"
+) %>%
+   set_mode("classification") %>%
+   set_engine("keras")
+
+keras_grid <- keras_tune_spec %>%
+   parameters() %>%
+   grid_max_entropy(size = 10)
+
+keras_wflow <- workflow() %>%
+   add_recipe(preprocess) %>%
+   add_model(keras_tune_spec)
 
 
 # 5 - Definindo os Modelos ------------------------------------------------
