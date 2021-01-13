@@ -7,6 +7,9 @@ library(vip)
 library(tidyverse)
 library(tidymodels)
 
+# Parameter for Parallel Processing
+logical_cores <- parallel::detectCores(logical = TRUE)
+
 Allocated_Memory <- paste(memory.size(), "Mb")
 
 
@@ -332,19 +335,34 @@ xgboost_recipe
 
 
 # 5.1 - trees() e learn_rate() --------------------------------------------
+# xgboost_spec1 <-
+#    boost_tree(
+#       mode = "classification",
+#       mtry = 25,
+#       trees = tune(),
+#       min_n = 2,
+#       tree_depth = 3,
+#       learn_rate = tune(),
+#       loss_reduction = 0.00001766597,
+#       sample_size = 1
+#    ) %>%
+#    set_mode("classification") %>%
+#    set_engine("xgboost", nthread = logical_cores, verbose = TRUE)
+# xgboost_spec1
+
 xgboost_spec1 <-
    boost_tree(
       mode = "classification",
-      mtry = 25,
+      mtry = 20,
       trees = tune(),
       min_n = 2,
-      tree_depth = 3,
+      tree_depth = 4,
       learn_rate = tune(),
-      loss_reduction = 0.00001766597,
+      loss_reduction = 0.166,
       sample_size = 1
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
 xgboost_spec1
 
 
@@ -378,19 +396,34 @@ best_round1
 
 
 # 5.2 - min_n() e tree_depth() --------------------------------------------
+# xgboost_spec2 <-
+#    boost_tree(
+#       mode = "classification",
+#       mtry = 25,
+#       trees = best_round1$trees,
+#       min_n = tune(),
+#       tree_depth = tune(),
+#       learn_rate = best_round1$learn_rate,
+#       loss_reduction = 0.00001766597,
+#       sample_size = 1
+#    ) %>%
+#    set_mode("classification") %>%
+#    set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
+# xgboost_spec2
+
 xgboost_spec2 <-
    boost_tree(
       mode = "classification",
-      mtry = 25,
+      mtry = 20,
       trees = best_round1$trees,
       min_n = tune(),
       tree_depth = tune(),
       learn_rate = best_round1$learn_rate,
-      loss_reduction = 0.00001766597,
+      loss_reduction = 0.166,
       sample_size = 1
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
 xgboost_spec2
 
 
@@ -425,10 +458,25 @@ best_round2
 
 
 # 5.3 - loss_reduction() e lambda() ---------------------------------------
+# xgboost_spec3 <-
+#    boost_tree(
+#       mode = "classification",
+#       mtry = 25,
+#       trees = best_round1$trees,
+#       min_n = best_round2$min_n,
+#       tree_depth = best_round2$tree_depth,
+#       learn_rate = best_round1$learn_rate,
+#       loss_reduction = tune(),
+#       sample_size = 1
+#    ) %>%
+#    set_mode("classification") %>%
+#    set_engine("xgboost", lambda = tune("lambda"), nthread = logical_cores, verbose = TRUE)
+# xgboost_spec3
+
 xgboost_spec3 <-
    boost_tree(
       mode = "classification",
-      mtry = 25,
+      mtry = 20,
       trees = best_round1$trees,
       min_n = best_round2$min_n,
       tree_depth = best_round2$tree_depth,
@@ -437,7 +485,7 @@ xgboost_spec3 <-
       sample_size = 1
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = tune("lambda"), nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = tune("lambda"), nthread = logical_cores, verbose = TRUE)
 xgboost_spec3
 
 
@@ -485,7 +533,7 @@ xgboost_spec4 <-
       sample_size = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = best_round3$lambda, nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = best_round3$lambda, nthread = logical_cores, verbose = TRUE)
 xgboost_spec4
 
 
@@ -534,7 +582,7 @@ xgboost_spec5 <-
       sample_size = best_round4$sample_size
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = best_round3$lambda, nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = best_round3$lambda, nthread = logical_cores, verbose = TRUE)
 xgboost_spec5
 
 
@@ -598,7 +646,7 @@ xgboost_spec6 <-
       sample_size = best_round4$sample_size
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = best_round3$lambda, nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = best_round3$lambda, nthread = logical_cores, verbose = TRUE)
 xgboost_spec6
 
 
@@ -649,7 +697,7 @@ xgboost_spec7 <-
       sample_size = best_round4$sample_size
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = tune("lambda"), nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = tune("lambda"), nthread = logical_cores, verbose = TRUE)
 xgboost_spec7
 
 
@@ -701,7 +749,7 @@ xgboost_spec8 <-
       sample_size = tune()
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = best_round7$lambda, nthread = 8, verbose = TRUE)
+   set_engine("xgboost", lambda = best_round7$lambda, nthread = logical_cores, verbose = TRUE)
 xgboost_spec8
 
 
