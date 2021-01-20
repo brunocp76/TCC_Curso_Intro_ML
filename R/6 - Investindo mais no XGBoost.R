@@ -350,6 +350,21 @@ xgboost_recipe
 #    set_engine("xgboost", nthread = logical_cores, verbose = TRUE)
 # xgboost_spec1
 
+# xgboost_spec1 <-
+#    boost_tree(
+#       mode = "classification",
+#       mtry = 20,
+#       trees = tune(),
+#       min_n = 2,
+#       tree_depth = 4,
+#       learn_rate = tune(),
+#       loss_reduction = 0.166,
+#       sample_size = 1
+#    ) %>%
+#    set_mode("classification") %>%
+#    set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
+# xgboost_spec1
+
 xgboost_spec1 <-
    boost_tree(
       mode = "classification",
@@ -358,11 +373,11 @@ xgboost_spec1 <-
       min_n = 2,
       tree_depth = 4,
       learn_rate = tune(),
-      loss_reduction = 0.166,
+      loss_reduction = 0.2763263,
       sample_size = 1
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
+   set_engine("xgboost", lambda = 0.15, nthread = logical_cores, verbose = TRUE)
 xgboost_spec1
 
 
@@ -411,6 +426,21 @@ best_round1
 #    set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
 # xgboost_spec2
 
+# xgboost_spec2 <-
+#    boost_tree(
+#       mode = "classification",
+#       mtry = 20,
+#       trees = best_round1$trees,
+#       min_n = tune(),
+#       tree_depth = tune(),
+#       learn_rate = best_round1$learn_rate,
+#       loss_reduction = 0.166,
+#       sample_size = 1
+#    ) %>%
+#    set_mode("classification") %>%
+#    set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
+# xgboost_spec2
+
 xgboost_spec2 <-
    boost_tree(
       mode = "classification",
@@ -419,11 +449,11 @@ xgboost_spec2 <-
       min_n = tune(),
       tree_depth = tune(),
       learn_rate = best_round1$learn_rate,
-      loss_reduction = 0.166,
+      loss_reduction = 0.2763263,
       sample_size = 1
    ) %>%
    set_mode("classification") %>%
-   set_engine("xgboost", lambda = 0.17, nthread = logical_cores, verbose = TRUE)
+   set_engine("xgboost", lambda = 0.15, nthread = logical_cores, verbose = TRUE)
 xgboost_spec2
 
 
@@ -435,7 +465,7 @@ xgboost_workflow2 <-
 
 testing_grid2 <- expand.grid(
    min_n = seq(from = 2, to = 9, by = 1),
-   tree_depth = seq(from = 2, to = 12, by = 1)
+   tree_depth = seq(from = 2, to = 7, by = 1)
 )
 testing_grid2
 
@@ -497,7 +527,7 @@ xgboost_workflow3 <-
 
 testing_grid3 <- expand.grid(
    loss_reduction = c(1e-5, 0.00001766597, seq(5e-5, 0.35, length.out = 20)),
-   lambda = c(0, 0.1, 0.12, 0.15, 0.17)
+   lambda = c(0, 0.1, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.2)
 )
 testing_grid3
 
@@ -544,7 +574,7 @@ xgboost_workflow4 <-
 
 
 testing_grid4 <- expand.grid(
-   mtry = seq(from = 5, to = 45, by = 5),
+   mtry = seq(from = 10, to = 45, by = 5),
    sample_size = seq(from = 0.6, to = 1, by = 0.02)
 )
 testing_grid4
@@ -658,7 +688,7 @@ xgboost_workflow6 <-
 
 testing_grid6 <- expand.grid(
    min_n = seq(from = 2, to = 7, by = 1),
-   tree_depth = seq(from = 2, to = 12, by = 1)
+   tree_depth = seq(from = 2, to = 7, by = 1)
 )
 testing_grid6
 
@@ -709,7 +739,7 @@ xgboost_workflow7 <-
 
 testing_grid7 <- expand.grid(
    loss_reduction = c(1e-5, 0.00001766597, seq(5e-5, 0.35, length.out = 20)),
-   lambda = c(0, 0.1, 0.12, 0.15, 0.17)
+   lambda = c(0, 0.1, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.2)
 )
 testing_grid7
 
@@ -760,7 +790,7 @@ xgboost_workflow8 <-
 
 
 testing_grid8 <- expand.grid(
-   mtry = seq(from = 5, to = 45, by = 5),
+   mtry = seq(from = 10, to = 45, by = 5),
    sample_size = seq(from = 0.6, to = 1, by = 0.02)
 )
 testing_grid8
@@ -799,7 +829,14 @@ grid_latin_hypercube()
 graphics.off()
 
 
-collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% print.data.frame()
+collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
+collect_metrics(tuning_round2) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
+collect_metrics(tuning_round3) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
+collect_metrics(tuning_round4) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
+collect_metrics(tuning_round5) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
+collect_metrics(tuning_round6) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
+collect_metrics(tuning_round7) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
+collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
 
 
 # collect_metrics(adult_rl_tune_grid) %>%
@@ -823,55 +860,192 @@ Allocated_Memory <- paste(memory.size(), "Mb")
 
 
 # 7.1 - Melhores Parametros de Desempenho ---------------------------------
-xgboost_best_params <-
-   select_best(
-      x = tuning_round8,
-      metric = "roc_auc"
-   )
-xgboost_best_params
+xgboost_best_params1 <- select_best(x = tuning_round1, metric = "roc_auc")
+xgboost_best_params2 <- select_best(x = tuning_round2, metric = "roc_auc")
+xgboost_best_params3 <- select_best(x = tuning_round3, metric = "roc_auc")
+xgboost_best_params4 <- select_best(x = tuning_round4, metric = "roc_auc")
+xgboost_best_params5 <- select_best(x = tuning_round5, metric = "roc_auc")
+xgboost_best_params6 <- select_best(x = tuning_round6, metric = "roc_auc")
+xgboost_best_params7 <- select_best(x = tuning_round7, metric = "roc_auc")
+xgboost_best_params8 <- select_best(x = tuning_round8, metric = "roc_auc")
+xgboost_best_params1
+xgboost_best_params2
+xgboost_best_params3
+xgboost_best_params4
+xgboost_best_params5
+xgboost_best_params6
+xgboost_best_params7
+xgboost_best_params8
 
 
 # 7.2 - Workflows de Finalizacao ------------------------------------------
-xgboost_workflow <-
-   xgboost_workflow8 %>%
-   finalize_workflow(xgboost_best_params)
-xgboost_workflow
+xgboost_workflow_final1 <- xgboost_workflow1 %>%
+   finalize_workflow(xgboost_best_params1)
+xgboost_workflow_final2 <- xgboost_workflow2 %>%
+   finalize_workflow(xgboost_best_params2)
+xgboost_workflow_final3 <- xgboost_workflow3 %>%
+   finalize_workflow(xgboost_best_params3)
+xgboost_workflow_final4 <- xgboost_workflow4 %>%
+   finalize_workflow(xgboost_best_params4)
+xgboost_workflow_final5 <- xgboost_workflow5 %>%
+   finalize_workflow(xgboost_best_params5)
+xgboost_workflow_final6 <- xgboost_workflow6 %>%
+   finalize_workflow(xgboost_best_params6)
+xgboost_workflow_final7 <- xgboost_workflow7 %>%
+   finalize_workflow(xgboost_best_params7)
+xgboost_workflow_final8 <- xgboost_workflow8 %>%
+   finalize_workflow(xgboost_best_params8)
+xgboost_workflow_final1
+xgboost_workflow_final2
+xgboost_workflow_final3
+xgboost_workflow_final4
+xgboost_workflow_final5
+xgboost_workflow_final6
+xgboost_workflow_final7
+xgboost_workflow_final8
 
 
 # 7.3 - Aplicando o Ultimo Modelo -----------------------------------------
-xgboost_last_fit <-
-   last_fit(
-      object = xgboost_workflow,
-      split = split
-   )
-xgboost_last_fit
+xgboost_last_fit1 <- last_fit(object = xgboost_workflow_final1, split = split)
+xgboost_last_fit2 <- last_fit(object = xgboost_workflow_final2, split = split)
+xgboost_last_fit3 <- last_fit(object = xgboost_workflow_final3, split = split)
+xgboost_last_fit4 <- last_fit(object = xgboost_workflow_final4, split = split)
+xgboost_last_fit5 <- last_fit(object = xgboost_workflow_final5, split = split)
+xgboost_last_fit6 <- last_fit(object = xgboost_workflow_final6, split = split)
+xgboost_last_fit7 <- last_fit(object = xgboost_workflow_final7, split = split)
+xgboost_last_fit8 <- last_fit(object = xgboost_workflow_final8, split = split)
+xgboost_last_fit1
+xgboost_last_fit2
+xgboost_last_fit3
+xgboost_last_fit4
+xgboost_last_fit5
+xgboost_last_fit6
+xgboost_last_fit7
+xgboost_last_fit8
 
 
 # 8 - Finalizando... ------------------------------------------------------
 
 
 # 8.1 - Metricas de Desempenho --------------------------------------------
-collect_metrics(xgboost_last_fit) %>% print.data.frame()
+collect_metrics(xgboost_last_fit1) %>% head() %>% print.data.frame()
+collect_metrics(xgboost_last_fit2) %>% head() %>% print.data.frame()
+collect_metrics(xgboost_last_fit3) %>% head() %>% print.data.frame()
+collect_metrics(xgboost_last_fit4) %>% head() %>% print.data.frame()
+collect_metrics(xgboost_last_fit5) %>% head() %>% print.data.frame()
+collect_metrics(xgboost_last_fit6) %>% head() %>% print.data.frame()
+collect_metrics(xgboost_last_fit7) %>% head() %>% print.data.frame()
+collect_metrics(xgboost_last_fit8) %>% head() %>% print.data.frame()
 
 
-xgboost_preds <- collect_predictions(xgboost_last_fit)
-xgboost_preds
+xgboost_preds1 <- collect_predictions(xgboost_last_fit1)
+xgboost_preds2 <- collect_predictions(xgboost_last_fit2)
+xgboost_preds3 <- collect_predictions(xgboost_last_fit3)
+xgboost_preds4 <- collect_predictions(xgboost_last_fit4)
+xgboost_preds5 <- collect_predictions(xgboost_last_fit5)
+xgboost_preds6 <- collect_predictions(xgboost_last_fit6)
+xgboost_preds7 <- collect_predictions(xgboost_last_fit7)
+xgboost_preds8 <- collect_predictions(xgboost_last_fit8)
+xgboost_preds1
+xgboost_preds2
+xgboost_preds3
+xgboost_preds4
+xgboost_preds5
+xgboost_preds6
+xgboost_preds7
+xgboost_preds8
 
 
 # 8.2 - ROC para os Modelos -----------------------------------------------
-xgboost_roc <- xgboost_preds %>%
-   roc_curve(resposta, `.pred_<=50K`)
-autoplot(xgboost_roc) + ggtitle("Curva ROC")
+xgboost_roc1 <- xgboost_preds1 %>% roc_curve(resposta, `.pred_<=50K`)
+xgboost_roc2 <- xgboost_preds2 %>% roc_curve(resposta, `.pred_<=50K`)
+xgboost_roc3 <- xgboost_preds3 %>% roc_curve(resposta, `.pred_<=50K`)
+xgboost_roc4 <- xgboost_preds4 %>% roc_curve(resposta, `.pred_<=50K`)
+xgboost_roc5 <- xgboost_preds5 %>% roc_curve(resposta, `.pred_<=50K`)
+xgboost_roc6 <- xgboost_preds6 %>% roc_curve(resposta, `.pred_<=50K`)
+xgboost_roc7 <- xgboost_preds7 %>% roc_curve(resposta, `.pred_<=50K`)
+xgboost_roc8 <- xgboost_preds8 %>% roc_curve(resposta, `.pred_<=50K`)
+autoplot(xgboost_roc1) + ggtitle("Curva ROC - Rodada 1")
+autoplot(xgboost_roc2) + ggtitle("Curva ROC - Rodada 2")
+autoplot(xgboost_roc3) + ggtitle("Curva ROC - Rodada 3")
+autoplot(xgboost_roc4) + ggtitle("Curva ROC - Rodada 4")
+autoplot(xgboost_roc5) + ggtitle("Curva ROC - Rodada 5")
+autoplot(xgboost_roc6) + ggtitle("Curva ROC - Rodada 6")
+autoplot(xgboost_roc7) + ggtitle("Curva ROC - Rodada 7")
+autoplot(xgboost_roc8) + ggtitle("Curva ROC - Rodada 8")
 
 
 # 8.3 - Importancia de Variaveis ------------------------------------------
-xgboost_last_fit_model <- xgboost_last_fit$.workflow[[1]]$fit$fit
-xgboost_last_fit_model
-vip(xgboost_last_fit_model)
+xgboost_last_fit_model1 <- xgboost_last_fit1$.workflow[[1]]$fit$fit
+xgboost_last_fit_model2 <- xgboost_last_fit2$.workflow[[1]]$fit$fit
+xgboost_last_fit_model3 <- xgboost_last_fit3$.workflow[[1]]$fit$fit
+xgboost_last_fit_model4 <- xgboost_last_fit4$.workflow[[1]]$fit$fit
+xgboost_last_fit_model5 <- xgboost_last_fit5$.workflow[[1]]$fit$fit
+xgboost_last_fit_model6 <- xgboost_last_fit6$.workflow[[1]]$fit$fit
+xgboost_last_fit_model7 <- xgboost_last_fit7$.workflow[[1]]$fit$fit
+xgboost_last_fit_model8 <- xgboost_last_fit8$.workflow[[1]]$fit$fit
+xgboost_last_fit_model1
+xgboost_last_fit_model2
+xgboost_last_fit_model3
+xgboost_last_fit_model4
+xgboost_last_fit_model5
+xgboost_last_fit_model6
+xgboost_last_fit_model7
+xgboost_last_fit_model8
+vip(xgboost_last_fit_model1)
+vip(xgboost_last_fit_model2)
+vip(xgboost_last_fit_model3)
+vip(xgboost_last_fit_model4)
+vip(xgboost_last_fit_model5)
+vip(xgboost_last_fit_model6)
+vip(xgboost_last_fit_model7)
+vip(xgboost_last_fit_model8)
 
 
 # 8.4 - Matrizes de Confusao ----------------------------------------------
-xgboost_preds %>%
+xgboost_preds1 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds2 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds3 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds4 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds5 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds6 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds7 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds8 %>%
    mutate(
       resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
    ) %>%
@@ -879,7 +1053,14 @@ xgboost_preds %>%
 
 
 # 8.5 - Base para o Kaggle ------------------------------------------------
-xgboost_final <- xgboost_workflow %>% fit(adult2)
+xgboost_final1 <- xgboost_workflow_final1 %>% fit(adult2)
+xgboost_final2 <- xgboost_workflow_final2 %>% fit(adult2)
+xgboost_final3 <- xgboost_workflow_final3 %>% fit(adult2)
+xgboost_final4 <- xgboost_workflow_final4 %>% fit(adult2)
+xgboost_final5 <- xgboost_workflow_final5 %>% fit(adult2)
+xgboost_final6 <- xgboost_workflow_final6 %>% fit(adult2)
+xgboost_final7 <- xgboost_workflow_final7 %>% fit(adult2)
+xgboost_final8 <- xgboost_workflow_final8 %>% fit(adult2)
 
 adult_val_submissao <- adult_val %>%
    mutate(
