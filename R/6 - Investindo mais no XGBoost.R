@@ -820,8 +820,8 @@ best_round8
 
 
 
-grid_max_entropy()
-grid_latin_hypercube()
+# grid_max_entropy()
+# grid_latin_hypercube()
 
 
 
