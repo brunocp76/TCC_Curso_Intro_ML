@@ -826,9 +826,6 @@ best_round8
 
 
 # 6 - Olhando as Metricas de Desempenho -----------------------------------
-graphics.off()
-
-
 collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
 collect_metrics(tuning_round2) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
 collect_metrics(tuning_round3) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
