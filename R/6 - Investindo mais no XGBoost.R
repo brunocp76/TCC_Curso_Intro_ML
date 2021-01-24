@@ -1049,7 +1049,68 @@ xgboost_preds8 %>%
    conf_mat(resposta, resposta_class)
 
 
-# 8.5 - Base para o Kaggle ------------------------------------------------
+# 8.5 - Decidindo qual eh o melhor modelo... ------------------------------
+cls()
+
+collect_metrics(xgboost_last_fit1) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit2) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit3) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit4) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit5) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit6) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit7) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit8) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+
+xgboost_preds1 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds2 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds3 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds4 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds5 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds6 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds7 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+xgboost_preds8 %>%
+   mutate(
+      resposta_class = factor(if_else(`.pred_<=50K` > 0.6, "<=50K", ">50K"))
+   ) %>%
+   conf_mat(resposta, resposta_class)
+
+
+# 8.6 - Base para o Kaggle ------------------------------------------------
 xgboost_final1 <- xgboost_workflow_final1 %>% fit(adult2)
 xgboost_final2 <- xgboost_workflow_final2 %>% fit(adult2)
 xgboost_final3 <- xgboost_workflow_final3 %>% fit(adult2)
