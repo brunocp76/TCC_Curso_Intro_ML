@@ -636,19 +636,19 @@ xgboost_workflow5 <-
 #    )
 
 
-learn_rate_mean <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head() %>% select(1) %>% as.double()
+trees_mean <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head() %>% select(1) %>% as.double()
 
-learn_rate_sd <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head(n = 125) %>% select(1) %>% gather() %>% group_by(key) %>% summarise('sd' = sd(value, na.rm = TRUE)) %>% select(2) %>% as.double()
+trees_sd <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head(n = 125) %>% select(1) %>% gather() %>% group_by(key) %>% summarise('sd' = sd(value, na.rm = TRUE)) %>% select(2) %>% as.double()
 
 
-trees_mean <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head() %>% select(2) %>% as.double()
+learn_rate_mean <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head() %>% select(2) %>% as.double()
 
-trees_sd <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head(n = 125) %>% select(2) %>% gather() %>% group_by(key) %>% summarise('sd' = sd(value, na.rm = TRUE)) %>% select(2) %>% as.double()
+learn_rate_sd <- collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% slice_head(n = 125) %>% select(2) %>% gather() %>% group_by(key) %>% summarise('sd' = sd(value, na.rm = TRUE)) %>% select(2) %>% as.double()
 
 
 testing_grid5 <- expand.grid(
-   learn_rate = rnorm(n = 10, mean = learn_rate_mean, sd = learn_rate_sd),
-   trees = rnorm(n = 10, mean = trees_mean, sd = trees_sd)
+   learn_rate = sort(rnorm(n = 30, mean = learn_rate_mean, sd = learn_rate_sd)),
+   trees = round(sort(rnorm(n = 30, mean = trees_mean, sd = trees_sd)))
 )
 testing_grid5
 
