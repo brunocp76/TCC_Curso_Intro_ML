@@ -407,7 +407,7 @@ autoplot(tuning_round1) + ggtitle("Round 1 - trees() e learn_rate()")
 tuning_round1 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round1) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round1 <- tuning_round1 %>% select_best(metric = "roc_auc")
-best_round1
+best_round1 %>% print.data.frame()
 
 
 # 5.2 - min_n() e tree_depth() --------------------------------------------
@@ -483,8 +483,8 @@ autoplot(tuning_round2) + ggtitle("Round 2 - min_n() e tree_depth()")
 tuning_round2 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round2) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round2 <- tuning_round2 %>% select_best(metric = "roc_auc")
-best_round1
-best_round2
+best_round1 %>% print.data.frame()
+best_round2 %>% print.data.frame()
 
 
 # 5.3 - loss_reduction() e lambda() ---------------------------------------
@@ -545,9 +545,9 @@ autoplot(tuning_round3) + ggtitle("Round 3 - loss_reduction() e lambda()")
 tuning_round3 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round3) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round3 <- tuning_round3 %>% select_best(metric = "roc_auc")
-best_round1
-best_round2
-best_round3
+best_round1 %>% print.data.frame()
+best_round2 %>% print.data.frame()
+best_round3 %>% print.data.frame()
 
 
 # 5.4 - mtry() e sample_size() --------------------------------------------
@@ -593,10 +593,10 @@ autoplot(tuning_round4) + ggtitle("Round 4 - mtry() e sample_size()")
 tuning_round4 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round4) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round4 <- tuning_round4 %>% select_best(metric = "roc_auc")
-best_round1
-best_round2
-best_round3
-best_round4
+best_round1 %>% print.data.frame()
+best_round2 %>% print.data.frame()
+best_round3 %>% print.data.frame()
+best_round4 %>% print.data.frame()
 
 
 # 5.5 - trees() e learn_rate() --------------------------------------------
@@ -666,11 +666,11 @@ autoplot(tuning_round5) + ggtitle("Round 5 - trees() e learn_rate()")
 tuning_round5 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round5) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round5 <- tuning_round5 %>% select_best(metric = "roc_auc")
-best_round1
-best_round2
-best_round3
-best_round4
-best_round5
+best_round1 %>% print.data.frame()
+best_round2 %>% print.data.frame()
+best_round3 %>% print.data.frame()
+best_round4 %>% print.data.frame()
+best_round5 %>% print.data.frame()
 
 
 # 5.6 - min_n() e tree_depth() --------------------------------------------
@@ -726,12 +726,12 @@ autoplot(tuning_round6) + ggtitle("Round 6 - min_n() e tree_depth()")
 tuning_round6 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round6) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round6 <- tuning_round6 %>% select_best(metric = "roc_auc")
-best_round1
-best_round2
-best_round3
-best_round4
-best_round5
-best_round6
+best_round1 %>% print.data.frame()
+best_round2 %>% print.data.frame()
+best_round3 %>% print.data.frame()
+best_round4 %>% print.data.frame()
+best_round5 %>% print.data.frame()
+best_round6 %>% print.data.frame()
 
 
 # 5.7 - loss_reduction() e lambda() ---------------------------------------
@@ -787,13 +787,13 @@ autoplot(tuning_round7) + ggtitle("Round 7 - loss_reduction() e lambda()")
 tuning_round7 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round7) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round7 <- tuning_round7 %>% select_best(metric = "roc_auc")
-best_round1
-best_round2
-best_round3
-best_round4
-best_round5
-best_round6
-best_round7
+best_round1 %>% print.data.frame()
+best_round2 %>% print.data.frame()
+best_round3 %>% print.data.frame()
+best_round4 %>% print.data.frame()
+best_round5 %>% print.data.frame()
+best_round6 %>% print.data.frame()
+best_round7 %>% print.data.frame()
 
 
 # 5.8 - mtry() e sample_size() --------------------------------------------
@@ -849,14 +849,14 @@ autoplot(tuning_round8) + ggtitle("Round 8 - mtry() e sample_size()")
 tuning_round8 %>% show_best(metric = "roc_auc", n = 10) %>% print.data.frame()
 collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% print.data.frame()
 best_round8 <- tuning_round8 %>% select_best(metric = "roc_auc")
-best_round1
-best_round2
-best_round3
-best_round4
-best_round5
-best_round6
-best_round7
-best_round8
+best_round1 %>% print.data.frame()
+best_round2 %>% print.data.frame()
+best_round3 %>% print.data.frame()
+best_round4 %>% print.data.frame()
+best_round5 %>% print.data.frame()
+best_round6 %>% print.data.frame()
+best_round7 %>% print.data.frame()
+best_round8 %>% print.data.frame()
 
 
 
@@ -1092,14 +1092,14 @@ xgboost_preds8 %>%
 # 8.5 - Decidindo qual eh o melhor modelo... ------------------------------
 cls()
 
-collect_metrics(xgboost_last_fit1) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
-collect_metrics(xgboost_last_fit2) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
-collect_metrics(xgboost_last_fit3) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
-collect_metrics(xgboost_last_fit4) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
-collect_metrics(xgboost_last_fit5) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
-collect_metrics(xgboost_last_fit6) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
-collect_metrics(xgboost_last_fit7) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
-collect_metrics(xgboost_last_fit8) %>% select(mean, n, std_err, everything(), -c('.estimator', '.config')) %>%  head(1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit1) %>% print.data.frame()
+collect_metrics(xgboost_last_fit2) %>% print.data.frame()
+collect_metrics(xgboost_last_fit3) %>% print.data.frame()
+collect_metrics(xgboost_last_fit4) %>% print.data.frame()
+collect_metrics(xgboost_last_fit5) %>% print.data.frame()
+collect_metrics(xgboost_last_fit6) %>% print.data.frame()
+collect_metrics(xgboost_last_fit7) %>% print.data.frame()
+collect_metrics(xgboost_last_fit8) %>% print.data.frame()
 
 xgboost_preds1 %>%
    mutate(
