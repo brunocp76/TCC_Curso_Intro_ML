@@ -875,6 +875,24 @@ collect_metrics(tuning_round6) %>% arrange(desc(mean)) %>% head(1) %>% print.dat
 collect_metrics(tuning_round7) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
 collect_metrics(tuning_round8) %>% arrange(desc(mean)) %>% head(1) %>% print.data.frame()
 
+resumo_performance <- rbind(
+collect_metrics(tuning_round1) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1),
+collect_metrics(tuning_round2) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1),
+collect_metrics(tuning_round3) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1),
+collect_metrics(tuning_round4) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1),
+collect_metrics(tuning_round5) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1),
+collect_metrics(tuning_round6) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1),
+collect_metrics(tuning_round7) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1),
+collect_metrics(tuning_round8) %>% select(3:7) %>% arrange(desc(mean)) %>% head(1)
+)
+
+resumo_performance %>% ggplot() +
+   geom_line(aes(x = 1:8, y = mean)) +
+   labs(
+      title = "Area under ROC for Models",
+      x = "Model",
+      y = "Area under ROC"
+   )
 
 # collect_metrics(adult_rl_tune_grid) %>%
 #    ggplot(aes(x = penalty, y = mean)) +
@@ -905,14 +923,14 @@ xgboost_best_params5 <- select_best(x = tuning_round5, metric = "roc_auc")
 xgboost_best_params6 <- select_best(x = tuning_round6, metric = "roc_auc")
 xgboost_best_params7 <- select_best(x = tuning_round7, metric = "roc_auc")
 xgboost_best_params8 <- select_best(x = tuning_round8, metric = "roc_auc")
-xgboost_best_params1
-xgboost_best_params2
-xgboost_best_params3
-xgboost_best_params4
-xgboost_best_params5
-xgboost_best_params6
-xgboost_best_params7
-xgboost_best_params8
+xgboost_best_params1 %>% print.data.frame()
+xgboost_best_params2 %>% print.data.frame()
+xgboost_best_params3 %>% print.data.frame()
+xgboost_best_params4 %>% print.data.frame()
+xgboost_best_params5 %>% print.data.frame()
+xgboost_best_params6 %>% print.data.frame()
+xgboost_best_params7 %>% print.data.frame()
+xgboost_best_params8 %>% print.data.frame()
 
 
 # 7.2 - Workflows de Finalizacao ------------------------------------------
